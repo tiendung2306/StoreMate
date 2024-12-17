@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int    @id @default(autoincrement())
+  name            String
+  role            Role   @default(CUSTOMER)
+  phone           String @unique
+  password        String
+  billsAsAdmin    Bill[] @relation("AdminBills")
+  billsAsCustomer Bill[] @relation("CustomerBills")
+}
+
+model Product {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?       @db.LongText
+  price       Float
+  image       String?       @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw_HeSzHfBorKS4muw4IIeVvvRgnhyO8Gn8w&s") @db.VarChar(255)
+  category_id Int
+  category    Category?     @relation(fields: [category_id], references: [id])
+  BillProduct BillProduct[]
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  image       String    @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw_HeSzHfBorKS4muw4IIeVvvRgnhyO8Gn8w&s") @db.VarChar(255)
+  description String?   @db.LongText
+  products    Product[]
+}
+
+model Bill {
+  id          Int           @id @default(autoincrement())
+  admin_id    Int
+  customer_id Int
+  date        DateTime      @default(now())
+  admin       User          @relation("AdminBills", fields: [admin_id], references: [id])
+  customer    User          @relation("CustomerBills", fields: [customer_id], references: [id])
+  billProduct BillProduct[]
+}
+
+model BillProduct {
+  id         Int      @id @default(autoincrement())
+  bill_id    Int
+  product_id Int
+  quantity   Int
+  Bill       Bill?    @relation(fields: [bill_id], references: [id])
+  Product    Product? @relation(fields: [product_id], references: [id])
+
+  @@unique([bill_id, product_id])
+}
