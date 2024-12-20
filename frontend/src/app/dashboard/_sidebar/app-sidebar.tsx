@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
     Sidebar,
     SidebarContent,
@@ -10,17 +11,28 @@ import {
     SidebarMenu
 } from "@/components/ui/sidebar"
 
-export function AppSidebar() {
+interface IProps {
+    data: {
+        screen: 'product' | 'bill';
+        setScreen: React.Dispatch<React.SetStateAction<'product' | 'bill'>>;
+    }
+}
+
+export function AppSidebar(props: IProps) {
     return (
         <Sidebar>
             <SidebarHeader />
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupContent>
-                        Application
+                        <h1>Application</h1>
                         <SidebarMenu>
-                            <SidebarMenuItem >Dashboard</SidebarMenuItem>
-                            <SidebarMenuItem >Settings</SidebarMenuItem>
+                            <SidebarMenuItem >
+                                <Button onClick={() => props.data.setScreen('product')}>Product</Button>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem >
+                                <Button onClick={() => props.data.setScreen('bill')}>Bill</Button>
+                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

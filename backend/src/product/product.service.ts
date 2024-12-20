@@ -12,8 +12,10 @@ export class ProductService {
     return this.prisma.product.create({ data: createProductDto });
   }
 
-  findAll() {
-    return this.prisma.product.findMany();
+  findAll(page?: number, take?: number) {
+    const takeValue = take ? take : undefined;
+    const skip = page ? page * take : undefined;
+    return this.prisma.product.findMany({ skip, take: takeValue });
   }
 
   findOne(id: number) {

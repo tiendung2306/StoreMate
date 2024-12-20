@@ -1,8 +1,136 @@
+import { Button } from "@/components/ui/button";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination"
+import AddProduct from "./add-product";
+import SearchProduct from "./search-product";
+import { Key, useEffect, useState } from "react";
+import { IProduct } from "@/types/backend.d";
+import axios from 'axios';
 
-export default function App() {
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useToast } from "@/hooks/use-toast";
+import EditProduct from "./edit-product";
+
+
+export default function ProductScreen() {
+    const { toast } = useToast()
+    const API_URL = process.env.API_URL;
+    const [data, setData] = useState<IProduct[] | null>(null);
+    const [isProductChanged, setIsProductChanged] = useState<boolean>(false);
+    const [page, setPage] = useState<number>(1);
+
+    const LIMIT = 10;
+
+    useEffect(() => {
+        axios.get(`${API_URL}/v1/product/?page=${page - 1}&limit=${LIMIT}`)
+            .then((res) => {
+                setData(res.data)
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
+    }, [isProductChanged, page]);
+
+    const priceFormat = (price: number) => {
+        return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+    const removeProduct = (product_id: number) => {
+        axios.delete(`${API_URL}/v1/product/${product_id}`)
+            .then((res) => {
+                setIsProductChanged(!isProductChanged);
+                toast({
+                    variant: "destructive",
+                    title: "Đã xóa",
+                    description: "Xóa sản phẩm khỏi danh mục sản phẩm thành công!",
+                })
+            });
+        console.log(product_id);
+    }
+
+    const previousPage = () => {
+        if (page > 1) {
+            setPage(page - 1);
+        }
+    }
+
+    const nextPage = () => {
+        axios.get(`${API_URL}/v1/product/?page=${page}&limit=${LIMIT}`)
+            .then((res) => {
+                if (res.data.length > 0) {
+                    setPage(page + 1);
+                }
+            })
+            .catch((err) => {
+                throw new Error(err);
+            });
+    }
+
     return (
-        <div>
-            <h1>App</h1>
+        <div className="h-full w-full flex flex-col">
+            <div className="w-full h-[96px] flex items-end justify-between">
+                <SearchProduct />
+                <AddProduct data={{ isProductChanged, setIsProductChanged }} />
+            </div>
+
+            <div className="flex-grow relative">
+                <div className="flex flex-wrap">
+                    {!!data && data.map((product: IProduct) => {
+                        return (
+                            <DropdownMenu key={product.id}>
+                                <DropdownMenuTrigger asChild>
+                                    <div className="w-[calc(100%/5)] p-4 cursor-pointer">
+                                        <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
+                                            <div className="text-lg font-semibold h-[calc(7vh)]">{product.name}</div>
+                                            <div>
+                                                <img src={product.image} alt="product" className="size-36" />
+                                            </div>
+                                            <div className="text-2xl font-semibold mt-4">{priceFormat(product.price)}</div>
+                                        </div>
+                                    </div>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent >
+                                    <DropdownMenuItem className="cursor-pointer">Chỉnh sửa sản phẩm</DropdownMenuItem>
+                                    <EditProduct data={{ isProductChanged, setIsProductChanged, product }} />
+                                    <DropdownMenuItem className="cursor-pointer bg-red-600 text-white" onClick={() => removeProduct(product.id)}>Xóa sản phẩm</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )
+                    })}
+                </div>
+                <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2">
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious className="cursor-pointer" onClick={() => previousPage()} />
+                            </PaginationItem>
+                            <PaginationItem>
+                                <PaginationLink className="cursor-pointer" onClick={() => { setPage(1) }}>1</PaginationLink>
+                            </PaginationItem>
+                            <PaginationItem>
+                                <PaginationEllipsis />
+                            </PaginationItem>
+                            <PaginationItem>
+                                <PaginationNext className="cursor-pointer" onClick={() => nextPage()} />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            </div>
         </div>
     );
 }

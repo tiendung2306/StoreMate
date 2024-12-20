@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -13,8 +13,11 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query('page', ParseIntPipe) page?: number, @Query('limit', ParseIntPipe) take?: number) {
+    if (!!page && !take) {
+      throw new Error('You must provide the "take" query parameter if you provide the "page" query parameter');
+    }
+    return this.productService.findAll(page, take);
   }
 
   @Get(':id')
