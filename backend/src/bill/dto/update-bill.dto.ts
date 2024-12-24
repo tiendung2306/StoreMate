@@ -1,4 +1,5 @@
-import { IsDateString, IsNumber, IsOptional } from "class-validator";
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { Status } from "../enums/status.enum";
 
 export class UpdateBillDto {
     @IsOptional()
@@ -12,4 +13,12 @@ export class UpdateBillDto {
     @IsOptional()
     @IsDateString()
     date?: Date;
+
+    @IsOptional()
+    @IsString()
+    notes?: string;
+
+    @IsOptional()
+    @IsEnum(Status)
+    status?: string;
 }

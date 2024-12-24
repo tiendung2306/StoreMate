@@ -7,17 +7,24 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
 
+
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
 
   @Get()
-  findAll(@Query('page', ParseIntPipe) page?: number, @Query('limit', ParseIntPipe) take?: number) {
+  findAll(@Query('searchContent') searchContent?: string, @Query('priceFrom', ParseIntPipe) priceFrom?: number, @Query('priceTo', ParseIntPipe) priceTo?: number, @Query('page') page?: string, @Query('limit') take?: string) {
+    if (searchContent === undefined) searchContent = "";
     if (!!page && !take) {
       throw new Error('You must provide the "take" query parameter if you provide the "page" query parameter');
     }
-    return this.productService.findAll(page, take);
+    return this.productService.findAll(searchContent, priceFrom, priceTo, +page, +take);
+  }
+
+  @Get('search')
+  search(@Query('searchContent') searchContent: string) {
+    return this.productService.search(searchContent);
   }
 
   @Get(':id')
@@ -34,4 +41,6 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }
+
+
 }

@@ -32,18 +32,21 @@ export default function ProductScreen() {
     const [data, setData] = useState<IProduct[] | null>(null);
     const [isProductChanged, setIsProductChanged] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
+    const [searchFilter, setSearchFilter] = useState<string>('');
+    const [priceFrom, setPriceFrom] = useState<number>(-1);
+    const [priceTo, setPriceTo] = useState<number>(-1);
 
     const LIMIT = 10;
 
     useEffect(() => {
-        axios.get(`${API_URL}/v1/product/?page=${page - 1}&limit=${LIMIT}`)
+        axios.get(`${API_URL}/v1/product/?searchContent=${searchFilter}&priceFrom=${priceFrom}&priceTo=${priceTo}&page=${page - 1}&limit=${LIMIT}`)
             .then((res) => {
                 setData(res.data)
             })
             .catch((err) => {
                 throw new Error(err);
             });
-    }, [isProductChanged, page]);
+    }, [isProductChanged, page, searchFilter, priceFrom, priceTo]);
 
     const priceFormat = (price: number) => {
         return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
@@ -83,7 +86,7 @@ export default function ProductScreen() {
     return (
         <div className="h-full w-full flex flex-col">
             <div className="w-full h-[96px] flex items-end justify-between">
-                <SearchProduct />
+                <SearchProduct data={{ searchFilter, setSearchFilter, priceFrom, setPriceFrom, priceTo, setPriceTo }} />
                 <AddProduct data={{ isProductChanged, setIsProductChanged }} />
             </div>
 
@@ -95,7 +98,7 @@ export default function ProductScreen() {
                                 <DropdownMenuTrigger asChild>
                                     <div className="w-[calc(100%/5)] p-4 cursor-pointer">
                                         <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
-                                            <div className="text-lg font-semibold h-[calc(7vh)]">{product.name}</div>
+                                            <div className="text-lg font-semibold h-[7vh] max-h-[7vh] overflow-y-hidden">{product.name}</div>
                                             <div>
                                                 <img src={product.image} alt="product" className="size-36" />
                                             </div>

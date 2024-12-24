@@ -3,19 +3,44 @@ import { CreateBillDto } from './dto/create-bill.dto';
 import { UpdateBillDto } from './dto/update-bill.dto';
 import { PrismaService } from 'src/prisma.service';
 import { BillProductService } from 'src/bill-product/bill-product.service';
+import { AddBillDto } from './dto/add-bill.dto';
+import { Prisma } from '@prisma/client';
+import { Status } from './enums/status.enum';
+const _ = require('lodash');
 
 @Injectable()
 export class BillService {
 
   constructor(private prisma: PrismaService, private billProduct: BillProductService) { }
 
+
   async create(createBillDto: CreateBillDto) {
-    const admin = await this.prisma.user.findUnique({ where: { id: +createBillDto.admin_id, role: 'ADMIN' } });
-    const customer = await this.prisma.user.findUnique({ where: { id: +createBillDto.customer_id, role: 'CUSTOMER' } });
-    if (!admin || !customer) {
-      throw new Error('Admin or customer not found');
+    // Validate admin and customer roles
+    const admin = await this.prisma.user.findUnique({
+      where: { id: +createBillDto.admin_id },
+    });
+
+    const customer = await this.prisma.user.findUnique({
+      where: { id: +createBillDto.customer_id },
+    });
+
+    if (!admin || admin.role !== 'ADMIN') {
+      throw new Error('Admin not found or invalid role');
     }
-    return this.prisma.bill.create({ data: createBillDto });
+
+    if (!customer || customer.role !== 'CUSTOMER') {
+      throw new Error('Customer not found or invalid role');
+    }
+
+    const data: Prisma.BillCreateInput = {
+      admin: { connect: { id: createBillDto.admin_id } },
+      customer: { connect: { id: createBillDto.customer_id } },
+      date: createBillDto.date,
+      notes: createBillDto.notes,
+      status: createBillDto.status as Status, // Cast to Status enum
+    };
+
+    return this.prisma.bill.create({ data });
   }
 
   findAll() {
@@ -26,13 +51,31 @@ export class BillService {
     return this.prisma.bill.findUnique({ where: { id } });
   }
 
+  async addBill(addBillDto: AddBillDto) {
+    const bill = await this.create(_.omit(addBillDto, 'products'));
+    console.log(bill);
+    for (const product of addBillDto.products) {
+      this.addProductToBill(bill.id, product.product_id, product.quantity);
+    }
+    return { bill: await this.findOne(bill.id), products: await this.billProduct.getBillProductsByBillId(bill.id) };
+  }
+
   async update(id: number, updateBillDto: UpdateBillDto) {
     const admin = !!updateBillDto.admin_id && await this.prisma.user.findUnique({ where: { id: +updateBillDto.admin_id, role: 'ADMIN' } });
     const customer = !!updateBillDto.customer_id && await this.prisma.user.findUnique({ where: { id: +updateBillDto.customer_id, role: 'CUSTOMER' } });
     if ((!!updateBillDto.admin_id && !admin) || (!!updateBillDto.customer_id && !customer)) {
       throw new Error('Admin or customer not found');
     }
-    return this.prisma.bill.update({ where: { id }, data: updateBillDto });
+
+    const data: Prisma.BillCreateInput = {
+      admin: { connect: { id: updateBillDto.admin_id } },
+      customer: { connect: { id: updateBillDto.customer_id } },
+      date: updateBillDto.date,
+      notes: updateBillDto.notes,
+      status: updateBillDto.status as Status, // Cast to Status enum
+    };
+
+    return this.prisma.bill.update({ where: { id }, data });
   }
 
   remove(id: number) {

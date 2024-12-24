@@ -13,6 +13,12 @@ enum Role {
   CUSTOMER
 }
 
+enum Status {
+  PENDING
+  SETTLED
+  REFUNDED
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -52,6 +58,8 @@ model Bill {
   admin_id    Int
   customer_id Int
   date        DateTime      @default(now())
+  notes       String?       @db.LongText
+  status      Status
   admin       User          @relation("AdminBills", fields: [admin_id], references: [id])
   customer    User          @relation("CustomerBills", fields: [customer_id], references: [id])
   billProduct BillProduct[]

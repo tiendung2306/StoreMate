@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sid
 import { useState } from "react";
 import ProductScreen from "./_app/page";
 import { AppSidebar } from "./_sidebar/app-sidebar";
+import BillScreen from "./_bill/page";
 
 type ScreenType = 'product' | 'bill';
 
@@ -31,7 +32,7 @@ const MainContent = (props: MainContentProps) => {
         <main className={`${open ? 'w-[calc(100vw-16rem)]' : 'w-[100vw]'} h-screen transition-all duration-300`}>
             <SidebarTrigger className="absolute z-10" />
             {props.data.screen === 'product' ? <ProductScreen /> : null}
-            {props.data.screen === 'bill' ? <div>Bill</div> : null}
+            {props.data.screen === 'bill' ? <BillScreen /> : null}
         </main>
     );
 };

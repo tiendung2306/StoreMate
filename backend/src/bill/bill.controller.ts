@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from 
 import { BillService } from './bill.service';
 import { CreateBillDto } from './dto/create-bill.dto';
 import { UpdateBillDto } from './dto/update-bill.dto';
+import { AddBillDto } from './dto/add-bill.dto';
 
 @Controller('bill')
 export class BillController {
@@ -10,6 +11,12 @@ export class BillController {
   @Post()
   create(@Body() createBillDto: CreateBillDto) {
     return this.billService.create(createBillDto);
+  }
+
+  @Post('add-bill')
+  addBill(@Body() addBillDto: AddBillDto) {
+    console.log(addBillDto);
+    return this.billService.addBill(addBillDto);
   }
 
   @Get()
