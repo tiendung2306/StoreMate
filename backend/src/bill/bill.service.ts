@@ -6,13 +6,13 @@ import { BillProductService } from 'src/bill-product/bill-product.service';
 import { AddBillDto } from './dto/add-bill.dto';
 import { Prisma } from '@prisma/client';
 import { Status } from './enums/status.enum';
+import { UpdateAddBillDto } from './dto/update-add-bill.dto';
 const _ = require('lodash');
 
 @Injectable()
 export class BillService {
 
   constructor(private prisma: PrismaService, private billProduct: BillProductService) { }
-
 
   async create(createBillDto: CreateBillDto) {
     // Validate admin and customer roles
@@ -53,11 +53,20 @@ export class BillService {
 
   async addBill(addBillDto: AddBillDto) {
     const bill = await this.create(_.omit(addBillDto, 'products'));
-    console.log(bill);
     for (const product of addBillDto.products) {
-      this.addProductToBill(bill.id, product.product_id, product.quantity);
+      await this.addProductToBill(bill.id, product.product_id, product.quantity);
     }
     return { bill: await this.findOne(bill.id), products: await this.billProduct.getBillProductsByBillId(bill.id) };
+  }
+
+  async getProductsByBillId(bill_id: number) {
+    return { bill: await this.findOne(bill_id), products: await this.billProduct.getBillProductsByBillId(bill_id) };
+  }
+
+  async updateBill(updateAddBillDto: UpdateAddBillDto) {
+    for (const product of updateAddBillDto.products) {
+      await this.addProductToBill(updateAddBillDto.id, product.product_id, product.quantity);
+    }
   }
 
   async update(id: number, updateBillDto: UpdateBillDto) {

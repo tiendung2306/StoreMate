@@ -46,7 +46,6 @@ export default function EditProduct(props: EditProductProps) {
                     title: "Thành công",
                     description: "Chỉnh sửa sản phẩm thành công!",
                 })
-                console.log(res);
             })
             .catch((err) => {
                 toast({

@@ -26,10 +26,10 @@ export class BillProductService {
     async addProductToBill(bill_id: number, product_id: number, quantity: number) {
         const billProduct = await this.prisma.billProduct.findFirst({ where: { bill_id, product_id } });
         if (!billProduct) {
-            return this.createBillProduct({ bill_id, product_id, quantity });
+            const newBillProduct = await this.createBillProduct({ bill_id, product_id, quantity });
+            return newBillProduct;
         }
-        billProduct.quantity += quantity;
-        return this.prisma.billProduct.update({ where: { id: billProduct.id }, data: { quantity: billProduct.quantity } });
+        return this.prisma.billProduct.update({ where: { id: billProduct.id }, data: { quantity: quantity } });
     }
 
     async removeProductFromBill(bill_id: number, product_id: number, quantity: number) {

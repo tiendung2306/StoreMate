@@ -39,7 +39,6 @@ export default function SearchProduct(prop: IProp) {
         const priceFrom = (document.getElementById('priceFrom') as HTMLInputElement).value;
         const priceTo = (document.getElementById('priceTo') as HTMLInputElement).value;
 
-        console.log({ productName, priceFrom, priceTo });
         prop.data.setSearchFilter(productName);
         if (priceFrom !== '') prop.data.setPriceFrom(parseInt(priceFrom));
         else prop.data.setPriceFrom(-1);

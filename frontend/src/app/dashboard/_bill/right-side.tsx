@@ -1,8 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { convertToISO } from "@/lib/utils";
-import { IProduct } from "@/types/backend.d";
+import { IProduct, IUser } from "@/types/backend.d";
 import axios from "axios";
 import React, { useEffect, useRef } from "react";
+import { SearchBill } from "./search-bill";
 
 interface IProp {
     data: {
@@ -10,6 +11,10 @@ interface IProp {
         setProductOnBill: React.Dispatch<React.SetStateAction<IProduct[]>>;
         quantities: number[];
         setQuantities: React.Dispatch<React.SetStateAction<number[]>>;
+        bills: number[];
+        setBills: React.Dispatch<React.SetStateAction<number[]>>;
+        currentBill: number;
+        setCurrentBill: React.Dispatch<React.SetStateAction<number>>;
     }
 }
 
@@ -49,6 +54,16 @@ export function Right(prop: IProp) {
     const customerRef = useRef<HTMLInputElement>(null)
     const changeRef = useRef<HTMLSpanElement>(null)
     const noteRef = useRef<HTMLInputElement>(null)
+    const customerPhoneRef = useRef<HTMLInputElement>(null)
+
+    /**
+     * Check if the phone number is a valid Vietnamese phone number
+     * @param number phone number 
+     * @returns true if the phone number is a valid Vietnamese phone number, else false
+     */
+    function isVietnamesePhoneNumber(number: string) {
+        return /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/.test(number);
+    }
 
     useEffect(() => {
         const discount = parseFloat(discountRef.current?.value || '0');
@@ -68,7 +83,23 @@ export function Right(prop: IProp) {
         }
     }, [total, isChange])
 
-    const addBill = (status: string) => {
+    const addBill = async (status: string) => {
+        const customerPhone = customerPhoneRef.current?.value;
+        let customer: IUser | null = null;
+        if (!!customerPhone && isVietnamesePhoneNumber(customerPhone)) {
+            try {
+                const response = await axios.post(`${process.env.API_URL}/v1/users/add-customer`, {
+                    phone: customerPhone,
+                });
+                customer = response.data;
+            } catch (error) {
+                console.error("Error adding customer:", error);
+                return;
+            }
+        }
+
+        // console.log(customer);
+
         const ISODate = new Date(convertToISO(date.substring(4))).toISOString();
         const notes = noteRef.current?.value || "";
         const products = prop.data.productOnBill.map((product, index) => {
@@ -78,20 +109,45 @@ export function Right(prop: IProp) {
             }
         });
 
-        axios.post(`${process.env.API_URL}/v1/bill/add-bill`, {
-            admin_id: 2,
-            customer_id: 1,
-            date: ISODate,
-            notes: notes,
-            status: status,
-            products: products
-        })
-            .then(res => {
-                console.log(res.data);
+        if (prop.data.bills[prop.data.currentBill] === -1) { //day la hoa don ao, can tao hoa don moi
+            axios.post(`${process.env.API_URL}/v1/bill/add-bill`, {
+                admin_id: 2,
+                customer_id: !!customer ? customer.id : 1,
+                date: ISODate,
+                notes: notes,
+                status: status,
+                products: products
             })
-            .catch(err => {
-                console.error(err);
-            });
+                .then(res => {
+                    prop.data.setBills((prevBills: number[]) => {
+                        const newBills = [...prevBills];
+                        newBills[prop.data.currentBill] = res.data.bill.id;
+                        return newBills;
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
+        else {
+            axios.put(`${process.env.API_URL}/v1/bill/update-bill`, {
+                id: prop.data.bills[prop.data.currentBill],
+                admin_id: 2,
+                customer_id: !!customer ? customer.id : 1,
+                date: ISODate,
+                notes: notes,
+                status: status,
+                products: products
+            })
+                .then(res => {
+
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
+
+
     }
 
     const saveBill = () => {
@@ -102,10 +158,14 @@ export function Right(prop: IProp) {
         addBill('SETTLED');
     }
 
+    const { productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill } = prop.data;
+
     return (
-        <div className="absolute right-0 top-0 bottom-0 w-[calc(100vw*2/7)] mt-6 p-6 bg-white rounded-lg shadow-lg" style={{ boxShadow: 'rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset' }}>
+        <div className="absolute right-0 top-0 bottom-0 p-6 bg-white rounded-lg shadow-lg" style={{ width: 'calc(100vw * 2 / 7 - 1%)', boxShadow: 'rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset' }}>
+            <div className="text-xl font-bold">Hóa đơn</div>
+            <SearchBill data={{ productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill }}></SearchBill>
             <div className="flex justify-end my-3 text-gray-600 hover:underline cursor-pointer">{date}</div>
-            <Input placeholder="Tìm khách hàng" className="mb-4 p-2 border rounded-lg w-full" />
+            <Input placeholder="Tìm khách hàng" className="mb-4 p-2 border rounded-lg w-full" ref={customerPhoneRef} />
             <div className="space-y-4">
                 <div className="flex justify-between">
                     <span>Tổng tiền hàng:</span>

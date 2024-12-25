@@ -2,6 +2,12 @@ import { Body, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { AddCustomerDto } from './dtos/add-customer.dto';
+
+enum UserRole {
+    ADMIN = 'ADMIN',
+    CUSTOMER = 'CUSTOMER'
+}
 
 @Injectable()
 export class UserService {
@@ -19,6 +25,20 @@ export class UserService {
 
     createUser(userBody: CreateUserDto) {
         return this.prisma.user.create({ data: userBody });
+    }
+
+    async addCustomer(addCustomerDto: AddCustomerDto) {
+        const customer = await this.prisma.user.findFirst({ where: { phone: addCustomerDto.phone, role: 'CUSTOMER' } });
+        if (!customer) {
+            const data = {
+                name: addCustomerDto.name || addCustomerDto.phone,
+                phone: addCustomerDto.phone,
+                role: UserRole.CUSTOMER,
+                password: addCustomerDto.password || "123",
+            }
+            return this.prisma.user.create({ data: data });
+        }
+        return customer;
     }
 
     updateUserById(id: number, updateUserBody: UpdateUserDto) {

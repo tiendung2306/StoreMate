@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
 import { BillService } from './bill.service';
 import { CreateBillDto } from './dto/create-bill.dto';
 import { UpdateBillDto } from './dto/update-bill.dto';
 import { AddBillDto } from './dto/add-bill.dto';
+import { UpdateAddBillDto } from './dto/update-add-bill.dto';
 
 @Controller('bill')
 export class BillController {
@@ -15,8 +16,12 @@ export class BillController {
 
   @Post('add-bill')
   addBill(@Body() addBillDto: AddBillDto) {
-    console.log(addBillDto);
     return this.billService.addBill(addBillDto);
+  }
+
+  @Put('update-bill')
+  updateBill(@Body() updateAddBillDto: UpdateAddBillDto) {
+    return this.billService.updateBill(updateAddBillDto);
   }
 
   @Get()
@@ -37,6 +42,11 @@ export class BillController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.billService.remove(id);
+  }
+
+  @Get(':bill_id/get-products')
+  getProductsByBillId(@Param('bill_id', ParseIntPipe) bill_id: number) {
+    return this.billService.getProductsByBillId(bill_id);
   }
 
   @Patch(':bill_id/add-product/:product_id')

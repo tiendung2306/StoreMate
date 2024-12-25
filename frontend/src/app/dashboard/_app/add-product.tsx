@@ -31,8 +31,6 @@ export default function AddProduct(props: AddProductProps) {
         const productImage = (document.getElementById('product-image') as HTMLInputElement).files?.[0];
         const description = (document.getElementById('description') as HTMLInputElement).value;
 
-        console.log({ productName, price, productImage, description });
-
         axios.post(`${process.env.API_URL}/v1/product`, {
             name: productName,
             price: Number.parseInt(price),
@@ -46,7 +44,6 @@ export default function AddProduct(props: AddProductProps) {
                     title: "Thành công",
                     description: "Thêm sản phẩm vào danh mục sản phẩm thành công!",
                 })
-                console.log(res);
             })
             .catch((err) => {
                 toast({

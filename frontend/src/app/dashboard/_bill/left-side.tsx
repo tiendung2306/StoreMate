@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import SearchProduct from "./search-product";
 import { IProduct } from "@/types/backend.d";
+import { BillTab } from "./bill-tab";
 
 interface IProp {
     data: {
@@ -9,6 +10,10 @@ interface IProp {
         setProductOnBill: React.Dispatch<React.SetStateAction<IProduct[]>>;
         quantities: number[];
         setQuantities: React.Dispatch<React.SetStateAction<number[]>>;
+        bills: number[];
+        setBills: React.Dispatch<React.SetStateAction<number[]>>;
+        currentBill: number;
+        setCurrentBill: React.Dispatch<React.SetStateAction<number>>;
     }
 }
 
@@ -72,9 +77,10 @@ export function Left(prop: IProp) {
     }
 
     return (
-        <div className="h-full flex flex-col mt-6" style={{ boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px', width: 'calc(100% - calc(100vw*2/7) - 4px)' }}>
-            <div>
+        <div className="h-full flex flex-col mt-6 pr-1" style={{ boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px', width: 'calc(100% - calc(100vw*2/7) - 4px)' }}>
+            <div className="flex flex-row w-full">
                 <SearchProduct data={{ addProductToBill }}></SearchProduct>
+                <BillTab data={{ bills: prop.data.bills, setBills: prop.data.setBills, currentBill: prop.data.currentBill, setCurrentBill: prop.data.setCurrentBill }}></BillTab>
             </div>
 
             <div className="grow-0 w-full ml-1 p-1 overflow-y-auto min-h-[96%]" style={{ boxShadow: 'rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px' }}>

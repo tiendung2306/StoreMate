@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { RemovePasswordInterceptor } from './interceptors/remove-password.interceptor';
+import { AddCustomerDto } from './dtos/add-customer.dto';
 
 @UseInterceptors(RemovePasswordInterceptor)
 @Controller('users')
@@ -26,6 +27,11 @@ export class UserController {
     @Post()
     createUser(@Body() createUserDto: CreateUserDto) {
         return this.userService.createUser(createUserDto);
+    }
+
+    @Post('add-customer')
+    addCustomer(@Body() addCustomerDto: AddCustomerDto) {
+        return this.userService.addCustomer(addCustomerDto);
     }
 
     @Patch(':id')

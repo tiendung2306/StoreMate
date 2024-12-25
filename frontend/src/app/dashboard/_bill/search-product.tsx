@@ -40,13 +40,13 @@ export default function SearchProduct(prop: IProp) {
     }
 
     return (
-        <div className="relative">
+        <div className="relative w-[50%] mr-2">
             <Input className="mx-1 w-full" placeholder="Thêm sản phẩm" onChange={(e) => search(e)} onFocus={onFocus} onBlur={onBlur}></Input>
             {focused ? <div className="absolute bg-gray-100 border left-1 right-0 h-64 overflow-y-auto" style={{ boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px' }}>
                 {
                     productList.map((product: IProduct, index: number) => {
-                        return <div key={product.id} className="p-2 border-b cursor-pointer hover:bg-slate-300" onClick={() => addProduct(product)}>
-                            <div className="inline-block w-[20%]">SP_{product.id}</div>
+                        return <div key={product.id} className="flex items-center p-2 border-b cursor-pointer hover:bg-slate-300" onClick={() => addProduct(product)}>
+                            <div className="inline-block w-[20%] text-gray-500 text-sm">SP_{product.id}</div>
                             <div className="inline-block w-[80%] truncate">{product.name}</div>
                         </div>
                     })}

@@ -62,7 +62,6 @@ export default function ProductScreen() {
                     description: "Xóa sản phẩm khỏi danh mục sản phẩm thành công!",
                 })
             });
-        console.log(product_id);
     }
 
     const previousPage = () => {
@@ -72,7 +71,7 @@ export default function ProductScreen() {
     }
 
     const nextPage = () => {
-        axios.get(`${API_URL}/v1/product/?page=${page}&limit=${LIMIT}`)
+        axios.get(`${API_URL}/v1/product/?searchContent=${searchFilter}&priceFrom=${priceFrom}&priceTo=${priceTo}&page=${page}&limit=${LIMIT}`)
             .then((res) => {
                 if (res.data.length > 0) {
                     setPage(page + 1);
