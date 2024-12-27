@@ -11,7 +11,7 @@ export class CreateProductDto {
     price: number;
 
     @IsOptional()
-    @IsUrl()
+    @IsUrl({ require_tld: false })
     image?: string;
 
     @IsOptional()

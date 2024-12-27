@@ -4,6 +4,7 @@ import { IProduct, IUser } from "@/types/backend.d";
 import axios from "axios";
 import React, { useEffect, useRef } from "react";
 import { SearchBill } from "./search-bill";
+import { useToast } from "@/hooks/use-toast";
 
 interface IProp {
     data: {
@@ -32,6 +33,9 @@ export function Right(prop: IProp) {
     }
 
     const [date, setDate] = React.useState(getCurrentDate);
+
+
+    const { toast } = useToast()
 
     useEffect(() => {
         const date = getCurrentDate();
@@ -152,10 +156,16 @@ export function Right(prop: IProp) {
 
     const saveBill = () => {
         addBill('PENDING');
+        toast({
+            description: "Lưu hóa đơn thành công.",
+        })
     }
 
     const settled = () => {
         addBill('SETTLED');
+        toast({
+            description: "Thanh toán hóa đơn thành công.",
+        })
     }
 
     const { productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill } = prop.data;
@@ -195,8 +205,8 @@ export function Right(prop: IProp) {
                     <Input className="h-full" placeholder="Ghi chú" ref={noteRef} />
                 </div>
                 <div className="flex flex-row space-x-4">
-                    <button className="bg-gray-500 text-white px-4 py-8 rounded-lg w-[35%]" onClick={() => saveBill()}>Lưu hóa đơn</button>
-                    <button className="bg-green-600 text-white px-4 py-8 rounded-lg flex-grow" onClick={() => settled()}>Thanh toán</button>
+                    <button className="bg-gray-500 text-white px-4 py-4 rounded-lg w-[35%]" onClick={() => saveBill()}>Lưu hóa đơn</button>
+                    <button className="bg-green-600 text-white px-4 py-4 rounded-lg flex-grow" onClick={() => settled()}>Thanh toán</button>
                 </div>
             </div>
         </div>

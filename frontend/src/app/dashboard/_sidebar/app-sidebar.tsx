@@ -10,6 +10,7 @@ import {
     SidebarMenuItem,
     SidebarMenu
 } from "@/components/ui/sidebar"
+import { PackageSearch, Receipt } from "lucide-react";
 
 interface IProps {
     data: {
@@ -24,14 +25,13 @@ export function AppSidebar(props: IProps) {
             <SidebarHeader />
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupContent>
-                        <h1>Application</h1>
+                    <SidebarGroupContent className="p-2 flex flex-col">
                         <SidebarMenu>
                             <SidebarMenuItem >
-                                <Button onClick={() => props.data.setScreen('product')}>Product</Button>
+                                <Button onClick={() => props.data.setScreen('product')} className="w-[95%]"><PackageSearch />Product</Button>
                             </SidebarMenuItem>
                             <SidebarMenuItem >
-                                <Button onClick={() => props.data.setScreen('bill')}>Bill</Button>
+                                <Button onClick={() => props.data.setScreen('bill')} className="w-[95%]"><Receipt />Bill</Button>
                             </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
