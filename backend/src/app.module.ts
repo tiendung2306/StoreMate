@@ -9,10 +9,16 @@ import { CategoryModule } from './category/category.module';
 import { BillProductService } from './bill-product/bill-product.service';
 import { BillProductModule } from './bill-product/bill-product.module';
 import { UploadModule } from './upload/upload.module';
+import { AuthModule } from './auth/auth.module';
+import { LocalStrategy } from './auth/strategies/local.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { AuthService } from './auth/auth.service';
+import { UserService } from './user/user.service';
+import { PrismaService } from './prisma.service';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, BillModule, ProductModule, CategoryModule, BillProductModule, UploadModule],
+  imports: [ConfigModule.forRoot(), UserModule, BillModule, ProductModule, CategoryModule, BillProductModule, UploadModule, AuthModule, PassportModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LocalStrategy, AuthService, UserService, PrismaService],
 })
 export class AppModule { }

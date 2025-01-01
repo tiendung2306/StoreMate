@@ -2,20 +2,36 @@
 
 import Link from "next/link"
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import { useRouter } from 'next/navigation'
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
+import axios from "axios"
 
 export default function Login() {
     const router = useRouter()
     const [showPassword, setShowPassword] = useState(false)
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
 
     function loginClicked(): void {
-        router.push('/dashboard')
+        axios.post(`${process.env.API_URL}/v1/auth/login`, {
+            phone: phoneRef.current?.value,
+            password: passwordRef.current?.value
+        }, {
+            withCredentials: true
+        })
+            .then((res) => {
+                console.log(res.data);
+                router.push('/dashboard');
+            })
+            .catch((err) => {
+                alert('Invalid phone number or password');
+            })
+        // router.push('/dashboard')
     }
 
     return (
@@ -44,6 +60,7 @@ export default function Login() {
                                 pattern="[0-9]{10}"
                                 title="Please enter a valid 10-digit phone number"
                                 required
+                                ref={phoneRef}
                             />
                         </div>
 
@@ -60,6 +77,7 @@ export default function Login() {
                             </div>
                             <div className="relative">
                                 <Input
+                                    ref={passwordRef}
                                     type={showPassword ? "text" : "password"}
                                     required
                                 />

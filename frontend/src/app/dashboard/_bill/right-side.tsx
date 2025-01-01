@@ -16,6 +16,8 @@ interface IProp {
         setBills: React.Dispatch<React.SetStateAction<number[]>>;
         currentBill: number;
         setCurrentBill: React.Dispatch<React.SetStateAction<number>>;
+        user: IUser | null;
+        setUser: React.Dispatch<React.SetStateAction<IUser | null | undefined>>;
     }
 }
 
@@ -103,7 +105,6 @@ export function Right(prop: IProp) {
         }
 
         // console.log(customer);
-
         const ISODate = new Date(convertToISO(date.substring(4))).toISOString();
         const notes = noteRef.current?.value || "";
         const products = prop.data.productOnBill.map((product, index) => {
@@ -115,8 +116,8 @@ export function Right(prop: IProp) {
 
         if (prop.data.bills[prop.data.currentBill] === -1) { //day la hoa don ao, can tao hoa don moi
             axios.post(`${process.env.API_URL}/v1/bill/add-bill`, {
-                admin_id: 2,
-                customer_id: !!customer ? customer.id : 1,
+                admin_id: prop.data.user?.id || 1,
+                customer_id: !!customer ? customer.id : 2,
                 date: ISODate,
                 notes: notes,
                 status: status,
@@ -136,8 +137,8 @@ export function Right(prop: IProp) {
         else {
             axios.put(`${process.env.API_URL}/v1/bill/update-bill`, {
                 id: prop.data.bills[prop.data.currentBill],
-                admin_id: 2,
-                customer_id: !!customer ? customer.id : 1,
+                admin_id: prop.data.user?.id || 1,
+                customer_id: !!customer ? customer.id : 2,
                 date: ISODate,
                 notes: notes,
                 status: status,

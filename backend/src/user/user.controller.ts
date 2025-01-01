@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
+import { Request } from 'express';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { RemovePasswordInterceptor } from './interceptors/remove-password.interceptor';
 import { AddCustomerDto } from './dtos/add-customer.dto';
+import { AuthenticatedGuard } from 'src/auth/guards/authenticated.guard';
 
 @UseInterceptors(RemovePasswordInterceptor)
 @Controller('users')
@@ -14,6 +16,23 @@ export class UserController {
         this.userService = userService;
     }
 
+    @Get('status')
+    async getStatus(@Req() request: Request) {
+        const req = request as Request & { isAuthenticated: () => boolean; user: any; session: any };
+        if (req.isAuthenticated()) {
+            return {
+                status: 'authenticated',
+                user: req.user,
+                session: req.session,
+            };
+        } else {
+            return {
+                status: 'not authenticated',
+            };
+        }
+    }
+
+    @UseGuards(AuthenticatedGuard)
     @Get()
     getAllUsers() {
         return this.userService.getAllUsers();

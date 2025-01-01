@@ -1,10 +1,17 @@
 import { use, useEffect, useState } from "react";
 import { Left } from "./left-side";
 import { Right } from "./right-side";
-import { IBillProduct, IProduct } from "@/types/backend.d";
+import { IBillProduct, IProduct, IUser } from "@/types/backend.d";
 import axios from "axios";
 
-export default function BillScreen() {
+interface IProps {
+    data: {
+        user: IUser | null;
+        setUser: React.Dispatch<React.SetStateAction<IUser | null | undefined>>;
+    }
+}
+
+export default function BillScreen(props: IProps) {
 
     const [productOnBill, setProductOnBill] = useState<IProduct[]>([]);
     const initialQuantities = Array<number>(productOnBill.length).fill(1);
@@ -55,7 +62,7 @@ export default function BillScreen() {
     return (
         <div className="h-[96vh] ">
             <Left data={{ productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill }} />
-            <Right data={{ productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill }} />
+            <Right data={{ productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill, user: props.data.user, setUser: props.data.setUser }} />
         </div>
     )
 }

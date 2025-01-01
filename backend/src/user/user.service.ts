@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { AddCustomerDto } from './dtos/add-customer.dto';
+import * as bcrypt from 'bcrypt';
+
 
 enum UserRole {
     ADMIN = 'ADMIN',
@@ -23,18 +25,24 @@ export class UserService {
         return user;
     }
 
+    findUserByPhone(phone: string) {
+        return this.prisma.user.findFirst({ where: { phone } });
+    }
+
     createUser(userBody: CreateUserDto) {
         return this.prisma.user.create({ data: userBody });
     }
 
     async addCustomer(addCustomerDto: AddCustomerDto) {
         const customer = await this.prisma.user.findFirst({ where: { phone: addCustomerDto.phone, role: 'CUSTOMER' } });
+        const saltOrRounds = 10;
+        const hashedPassword = await bcrypt.hash(addCustomerDto.password || "123", saltOrRounds);
         if (!customer) {
             const data = {
                 name: addCustomerDto.name || addCustomerDto.phone,
                 phone: addCustomerDto.phone,
                 role: UserRole.CUSTOMER,
-                password: addCustomerDto.password || "123",
+                password: hashedPassword,
             }
             return this.prisma.user.create({ data: data });
         }

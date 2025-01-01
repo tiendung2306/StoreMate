@@ -68,4 +68,9 @@ export class BillController {
   calculateTotalPrice(@Param('bill_id', ParseIntPipe) bill_id: number) {
     return this.billService.calculateTotalPrice(bill_id);
   }
+
+  @Get(':user_id/get-bills')
+  getBillsByUserId(@Param('user_id', ParseIntPipe) user_id: number) {
+    return this.billService.getBillsByUserId(user_id);
+  }
 }

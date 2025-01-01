@@ -10,12 +10,15 @@ import {
     SidebarMenuItem,
     SidebarMenu
 } from "@/components/ui/sidebar"
+import { IUser } from "@/types/backend.d";
 import { PackageSearch, Receipt } from "lucide-react";
 
 interface IProps {
     data: {
         screen: 'product' | 'bill';
         setScreen: React.Dispatch<React.SetStateAction<'product' | 'bill'>>;
+        user: IUser | null;
+        setUser: React.Dispatch<React.SetStateAction<IUser | null | undefined>>;
     }
 }
 

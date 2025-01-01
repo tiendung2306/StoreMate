@@ -45,7 +45,7 @@ export function SearchBill(prop: IProp) {
 
     let [users, setUsers] = React.useState<IUser[]>([]);
     React.useEffect(() => {
-        axios.get(`${process.env.API_URL}/v1/users`)
+        axios.get(`${process.env.API_URL}/v1/users`, { withCredentials: true })
             .then(res => {
                 setUsers(res.data);
             });
