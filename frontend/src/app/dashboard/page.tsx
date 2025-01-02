@@ -1,9 +1,9 @@
 "use client";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { use, useEffect, useState } from "react";
-import ProductScreen from "./_app/page";
-import { AppSidebar } from "./_sidebar/app-sidebar";
-import BillScreen from "./_bill/page";
+import ProductScreen from "./_admin/_app/page";
+import { AppSidebar } from "./_admin/_sidebar/app-sidebar";
+import BillScreen from "./_admin/_bill/page";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import CustomerPage from "./_customer/page";

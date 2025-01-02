@@ -1,4 +1,5 @@
-import { Controller, Request, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Req, Get } from '@nestjs/common';
+import { Request } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
@@ -11,14 +12,23 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(@Req() req) {
     return req.user;
   }
 
-  @Post('/logout')
-  logout(@Request() req): any {
-    req.session.destroy();
-    return { msg: 'The user session has ended' }
+  @Get('/logout')
+  logout(@Req() request: Request) {
+    const req = request as Request & { isAuthenticated: () => boolean; user: any; session: any };
+    if (req.isAuthenticated()) {
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.log('Session destruction error:', err);
+        }
+      });
+      return { msg: 'The user session has ended' };
+    } else {
+      return { msg: 'No active session found' };
+    }
   }
 
   @Post('register')

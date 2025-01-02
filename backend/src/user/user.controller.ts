@@ -24,6 +24,7 @@ export class UserController {
                 status: 'authenticated',
                 user: req.user,
                 session: req.session,
+                cookie: req.cookies,
             };
         } else {
             return {

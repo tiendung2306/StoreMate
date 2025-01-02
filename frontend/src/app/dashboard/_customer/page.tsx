@@ -9,6 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 interface IProp {
     data: {
@@ -20,6 +21,7 @@ interface IProp {
 export default function CustomerPage(props: IProp) {
     const [bills, setBills] = useState<IBill[]>([]);
     const [billData, setBillData] = useState<any[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchBills = async () => {
@@ -60,9 +62,29 @@ export default function CustomerPage(props: IProp) {
         }
     }, [props.data.user]);
 
+    function logOut() {
+        axios.get(`${process.env.API_URL}/v1/auth/logout`, { withCredentials: true })
+            .then((res) => {
+                router.push('/login');
+                console.log(res.data);
+                document.cookie.split(";").forEach((c) => {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+
+                // Đặt lại trạng thái người dùng
+                props.data.setUser(null);
+            })
+            .catch(error => {
+                console.error('Error logging out:', error);
+            });
+    }
+
     return (
         <div className="container mx-auto px-4 py-6">
-            <h1 className="text-2xl font-bold mb-6">Customer Bills</h1>
+            <div className="flex justify-between items-center flex-row mb-4">
+                <h1 className="text-2xl font-bold">{props.data.user?.name}'s Bills</h1>
+                <div className='cursor-pointer hover:underline inline-block' onClick={() => logOut()}>Đăng xuất</div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {billData.length > 0 && billData.map((bill) => (
                     <Card key={bill.id} className="bg-white shadow-md rounded-lg">
