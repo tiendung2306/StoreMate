@@ -33,8 +33,8 @@ export default function ProductScreen() {
     const [isProductChanged, setIsProductChanged] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
     const [searchFilter, setSearchFilter] = useState<string>('');
-    const [priceFrom, setPriceFrom] = useState<number>(-1);
-    const [priceTo, setPriceTo] = useState<number>(-1);
+    const [priceFrom, setPriceFrom] = useState<number>(0);
+    const [priceTo, setPriceTo] = useState<number>(1000000);
 
     const LIMIT = 10;
 

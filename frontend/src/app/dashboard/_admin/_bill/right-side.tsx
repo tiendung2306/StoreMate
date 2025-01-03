@@ -36,6 +36,14 @@ export function Right(prop: IProp) {
 
     const [date, setDate] = React.useState(getCurrentDate);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDate(getCurrentDate());
+        }, 60000); // Update every 1 minute
+
+        return () => clearInterval(interval);
+    }, []);
+
 
     const { toast } = useToast()
 
@@ -88,6 +96,34 @@ export function Right(prop: IProp) {
             }
         }
     }, [total, isChange])
+
+    const newBill = () => {
+        prop.data.setBills((prevBills: number[]) => {
+            const newBills = [...prevBills];
+            newBills.push(-1); // make a new virtual bill
+            return newBills;
+        });
+    }
+
+    const closeBill = (index: number) => {
+        if (prop.data.bills.length === 1) {
+            prop.data.setBills([]);
+            newBill();
+            return;
+        }
+
+        prop.data.setBills((prevBills: number[]) => {
+            const newBills = [...prevBills];
+            newBills.splice(index, 1);
+            console.log(newBills);
+            return newBills;
+        });
+
+        if (index === prop.data.currentBill) {
+            const newIndex = index === 0 ? 0 : index - 1;
+            prop.data.setCurrentBill(newIndex);
+        }
+    }
 
     const addBill = async (status: string) => {
         const customerPhone = customerPhoneRef.current?.value;
@@ -160,6 +196,8 @@ export function Right(prop: IProp) {
         toast({
             description: "Lưu hóa đơn thành công.",
         })
+        closeBill(prop.data.currentBill);
+        // newBill();
     }
 
     const settled = () => {
@@ -167,6 +205,9 @@ export function Right(prop: IProp) {
         toast({
             description: "Thanh toán hóa đơn thành công.",
         })
+        console.log(prop.data.currentBill);
+        closeBill(prop.data.currentBill);
+        // newBill();
     }
 
     const { productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill } = prop.data;
