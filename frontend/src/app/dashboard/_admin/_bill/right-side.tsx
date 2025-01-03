@@ -210,6 +210,10 @@ export function Right(prop: IProp) {
         // newBill();
     }
 
+    function isNumber(numStr: string) {
+        return !isNaN(parseFloat(numStr)) && !isNaN(+numStr)
+    }
+
     const { productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill } = prop.data;
 
     return (
@@ -231,7 +235,7 @@ export function Right(prop: IProp) {
                         placeholder="0"
                         onChange={(v) => {
                             const value = parseFloat(discountRef.current?.value || '0');
-                            if (value < 0 || value > 100 || isNaN(value)) {
+                            if (value < 0 || value > 100 || !isNumber(v.target.value)) {
                                 discountRef.current!.value = '';
                                 v.target.value = '';
                             }
@@ -247,7 +251,7 @@ export function Right(prop: IProp) {
                         placeholder="0"
                         onChange={(v) => {
                             const value = parseFloat(taxRef.current?.value || '0');
-                            if (value < 0 || isNaN(value)) {
+                            if (value < 0 || !isNumber(v.target.value)) {
                                 taxRef.current!.value = '';
                                 v.target.value = '';
                             }
@@ -261,7 +265,15 @@ export function Right(prop: IProp) {
                 </div>
                 <div className="flex items-center justify-between">
                     <span>Khách thanh toán(đ):</span>
-                    <Input ref={customerRef} className="inline-block w-28 p-2 border rounded-lg" placeholder="0" onChange={() => setIsChange(!isChange)} />
+                    <Input ref={customerRef} className="inline-block w-28 p-2 border rounded-lg" placeholder="0"
+                        onChange={(v) => {
+                            const value = parseFloat(customerRef.current?.value || '0');
+                            if (value < 0 || !isNumber(v.target.value)) {
+                                customerRef.current!.value = '';
+                                v.target.value = '';
+                            }
+                            setIsChange(!isChange);
+                        }} />
                 </div>
                 <div className="flex justify-between">
                     <span className="">Tiền thừa trả khách:</span>

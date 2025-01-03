@@ -1,6 +1,18 @@
 import { CirclePlus, X } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 
 interface IProp {
     data: {
@@ -12,6 +24,9 @@ interface IProp {
 }
 
 export function BillTab(prop: IProp) {
+
+    const [isCloseBillDialogOpen, setIsCloseBillDialogOpen] = useState(false);
+
     const newBill = () => {
         prop.data.setBills((prevBills: number[]) => {
             const newBills = [...prevBills];
@@ -39,6 +54,10 @@ export function BillTab(prop: IProp) {
         }
     }
 
+    const openCloseBillDialog = (index: number) => {
+        setIsCloseBillDialogOpen(true);
+    }
+
     // Effect to set the current bill to the last bill if the bills array changes
     useEffect(() => {
         if (prop.data.bills.length > 0 && prop.data.currentBill >= prop.data.bills.length) {
@@ -59,10 +78,27 @@ export function BillTab(prop: IProp) {
                                 onClick={() => {
                                     prop.data.setCurrentBill(index);
                                 }}>Bill_{bill !== -1 ? bill : "draft"}</span>
-                            <X className="size-4 justify-end" onClick={() => closeBill(index)} />
+                            <AlertDialog>
+                                <AlertDialogTrigger>
+                                    <X className="size-4 justify-end" />
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure to close this bill?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently close your bill and not save any of your changes.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => closeBill(index)}>Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </div>
                     )
                 })}
+
                 <div className="cursor-pointer py-1" onClick={() => newBill()}><CirclePlus /></div>
             </div>
             <ScrollBar className="bg-gray-300 max-h-4" orientation="horizontal" />
