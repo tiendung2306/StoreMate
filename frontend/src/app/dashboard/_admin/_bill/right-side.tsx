@@ -217,7 +217,7 @@ export function Right(prop: IProp) {
             <div className="text-xl font-bold">Hóa đơn</div>
             <SearchBill data={{ productOnBill, setProductOnBill, quantities, setQuantities, bills, setBills, currentBill, setCurrentBill }}></SearchBill>
             <div className="flex justify-end my-3 text-gray-600 hover:underline cursor-pointer">{date}</div>
-            <Input placeholder="Tìm khách hàng" className="mb-4 p-2 border rounded-lg w-full" ref={customerPhoneRef} />
+            <Input placeholder="Nhập khách hàng" className="mb-4 p-2 border rounded-lg w-full" ref={customerPhoneRef} />
             <div className="space-y-4">
                 <div className="flex justify-between">
                     <span>Tổng tiền hàng:</span>
@@ -225,11 +225,35 @@ export function Right(prop: IProp) {
                 </div>
                 <div className="flex items-center justify-between">
                     <span>Giảm giá(%):</span>
-                    <Input ref={discountRef} className="inline-block w-28 p-2 border rounded-lg" placeholder="0" onChange={() => setIsChange(!isChange)} />
+                    <Input
+                        ref={discountRef}
+                        className="inline-block w-28 p-2 border rounded-lg"
+                        placeholder="0"
+                        onChange={(v) => {
+                            const value = parseFloat(discountRef.current?.value || '0');
+                            if (value < 0 || value > 100 || isNaN(value)) {
+                                discountRef.current!.value = '';
+                                v.target.value = '';
+                            }
+                            setIsChange(!isChange);
+                        }}
+                    />
                 </div>
                 <div className="flex items-center justify-between">
                     <span>Phí(đ):</span>
-                    <Input ref={taxRef} className="inline-block w-28 p-2 border rounded-lg" placeholder="0" onChange={() => setIsChange(!isChange)} />
+                    <Input
+                        ref={taxRef}
+                        className="inline-block w-28 p-2 border rounded-lg"
+                        placeholder="0"
+                        onChange={(v) => {
+                            const value = parseFloat(taxRef.current?.value || '0');
+                            if (value < 0 || isNaN(value)) {
+                                taxRef.current!.value = '';
+                                v.target.value = '';
+                            }
+                            setIsChange(!isChange);
+                        }}
+                    />
                 </div>
                 <div className="flex justify-between font-bold">
                     <span>Tổng tiền thanh toán:</span>
