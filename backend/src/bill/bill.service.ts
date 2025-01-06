@@ -51,8 +51,15 @@ export class BillService {
     return this.prisma.bill.findUnique({ where: { id } });
   }
 
-  getBillsByUserId(user_id: number) {
-    return this.prisma.bill.findMany({ where: { customer_id: user_id } });
+  getBillsByUserId(user_id: number, page: number, take: number) {
+    const takeValue = take ? take : undefined;
+    const skip = page ? page * take : undefined;
+    console.log(takeValue, skip);
+    return this.prisma.bill.findMany({
+      where: { customer_id: user_id },
+      skip,
+      take: takeValue
+    });
   }
 
   async addBill(addBillDto: AddBillDto) {

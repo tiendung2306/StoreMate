@@ -10,6 +10,8 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { set } from "zod";
 
 interface IProp {
     data: {
@@ -23,11 +25,14 @@ export default function CustomerPage(props: IProp) {
     const [billData, setBillData] = useState<any[]>([]);
     const router = useRouter();
 
+    const [page, setPage] = useState(0);
+    const [loadingMore, setLoadingMore] = useState(true);
+
     useEffect(() => {
         const fetchBills = async () => {
             try {
                 const res = await axios.get(
-                    `${process.env.API_URL}/v1/bill/${props.data.user?.id}/get-bills`
+                    `${process.env.API_URL}/v1/bill/${props.data.user?.id}/get-bills/?page=0&limit=6`
                 );
                 setBills(res.data);
                 const billPromises = res.data.map(async (bill: IBill) => {
@@ -52,6 +57,13 @@ export default function CustomerPage(props: IProp) {
                 });
                 const billData = await Promise.all(billPromises);
                 setBillData(billData);
+
+                const tryFetchMoreRes = await axios.get(
+                    `${process.env.API_URL}/v1/bill/${props.data.user?.id}/get-bills/?page=${page + 1}&limit=6`
+                );
+                if (tryFetchMoreRes.data.length === 0) {
+                    setLoadingMore(false);
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -61,6 +73,18 @@ export default function CustomerPage(props: IProp) {
             fetchBills();
         }
     }, [props.data.user]);
+
+    useEffect(() => {
+        const tryFetchBills = async () => {
+            const res = await axios.get(
+                `${process.env.API_URL}/v1/bill/${props.data.user?.id}/get-bills/?page=${page + 1}&limit=6`
+            );
+            if (res.data.length === 0) {
+                setLoadingMore(false);
+            }
+        };
+        tryFetchBills();
+    }, [page]);
 
     function logOut() {
         axios.get(`${process.env.API_URL}/v1/auth/logout`, { withCredentials: true })
@@ -79,11 +103,50 @@ export default function CustomerPage(props: IProp) {
             });
     }
 
+    const fetchMore = async () => {
+        setPage(page + 1);
+        try {
+            const res = await axios.get(
+                `${process.env.API_URL}/v1/bill/${props.data.user?.id}/get-bills/?page=${page + 1}&limit=6`
+            );
+            setBills([...bills, ...res.data]);
+            const billPromises = res.data.map(async (bill: IBill) => {
+                const [productsRes, totalPriceRes] = await Promise.all([
+                    axios.get(`${process.env.API_URL}/v1/bill/${bill.id}/get-products`),
+                    axios.get(`${process.env.API_URL}/v1/bill/${bill.id}/total-price`)
+                ]);
+                const detailedProducts = await Promise.all(
+                    productsRes.data.products.map(async (product: IBillProduct) => {
+                        const res = await axios.get(`${process.env.API_URL}/v1/product/${product.product_id}`);
+                        return { ...product, name: res.data.name, price: res.data.price };
+                    })
+                );
+                return {
+                    id: bill.id,
+                    date: bill.date,
+                    notes: bill.notes,
+                    status: bill.status,
+                    total: totalPriceRes.data,
+                    products: detailedProducts
+                };
+            });
+            const billDataPromise = await Promise.all(billPromises);
+            setBillData([...billData, ...billDataPromise]);
+            console.log([...bills, ...res.data]);
+            console.log([...billData, ...billDataPromise]);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <div className="container mx-auto px-4 py-6">
             <div className="flex justify-between items-center flex-row mb-4">
                 <h1 className="text-2xl font-bold">{props.data.user?.name}'s Bills</h1>
-                <div className='cursor-pointer hover:underline inline-block' onClick={() => logOut()}>Đăng xuất</div>
+                <div className="flex space-x-4">
+                    <div className="cursor-pointer hover:underline inline-block" onClick={() => { router.push('/myprofile') }}>My Profile</div>
+                    <div className='cursor-pointer hover:underline inline-block' onClick={() => logOut()}>Đăng xuất</div>
+                </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {billData.length > 0 && billData.map((bill) => (
@@ -111,6 +174,9 @@ export default function CustomerPage(props: IProp) {
                     </Card>
                 ))}
             </div>
+            {loadingMore && <div className="flex justify-center mt-4">
+                <Button variant="outline" onClick={() => fetchMore()}>Tải tiếp</Button>
+            </div>}
         </div>
     );
 }

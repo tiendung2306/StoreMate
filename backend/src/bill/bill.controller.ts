@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Put, Query } from '@nestjs/common';
 import { BillService } from './bill.service';
 import { CreateBillDto } from './dto/create-bill.dto';
 import { UpdateBillDto } from './dto/update-bill.dto';
@@ -70,7 +70,11 @@ export class BillController {
   }
 
   @Get(':user_id/get-bills')
-  getBillsByUserId(@Param('user_id', ParseIntPipe) user_id: number) {
-    return this.billService.getBillsByUserId(user_id);
+  getBillsByUserId(@Param('user_id', ParseIntPipe) user_id: number, @Query('page') page?: string, @Query('limit') take?: string) {
+    if (!!page && !take) {
+      throw new Error('You must provide the "take" query parameter if you provide the "page" query parameter');
+    }
+    console.log(user_id, page, take);
+    return this.billService.getBillsByUserId(user_id, +page, + take);
   }
 }
