@@ -4,6 +4,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { AddCustomerDto } from './dtos/add-customer.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserPasswordDto } from './dtos/update-user-password.dto';
 
 
 enum UserRole {
@@ -51,6 +52,23 @@ export class UserService {
 
     updateUserById(id: number, updateUserBody: UpdateUserDto) {
         return this.prisma.user.update({ where: { id }, data: updateUserBody });
+    }
+
+    async checkUserPassword(id: number, password: string) {
+        const user = await this.prisma.user.findFirst({ where: { id } });
+        if (!user) {
+            return false;
+        }
+        return bcrypt.compare(password, user.password);
+    }
+
+    async updateUserPasswordById(id: number, updateUserPasswordDto: UpdateUserPasswordDto) {
+        console.log(updateUserPasswordDto);
+        if (! await this.checkUserPassword(id, updateUserPasswordDto.currentPassword)) {
+            throw new Error('Current password is incorrect');
+        }
+        const hashedPassword = bcrypt.hashSync(updateUserPasswordDto.newPassword, 10);
+        return this.prisma.user.update({ where: { id }, data: { password: hashedPassword } });
     }
 
     deleteUserById(id: number) {

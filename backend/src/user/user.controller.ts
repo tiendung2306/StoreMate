@@ -6,6 +6,7 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { RemovePasswordInterceptor } from './interceptors/remove-password.interceptor';
 import { AddCustomerDto } from './dtos/add-customer.dto';
 import { AuthenticatedGuard } from 'src/auth/guards/authenticated.guard';
+import { UpdateUserPasswordDto } from './dtos/update-user-password.dto';
 
 @UseInterceptors(RemovePasswordInterceptor)
 @Controller('users')
@@ -20,9 +21,10 @@ export class UserController {
     async getStatus(@Req() request: Request) {
         const req = request as Request & { isAuthenticated: () => boolean; user: any; session: any };
         if (req.isAuthenticated()) {
+            const user = await this.userService.getUserById(req.user.id);
             return {
                 status: 'authenticated',
-                user: req.user,
+                user: user,
                 session: req.session,
                 cookie: req.cookies,
             };
@@ -57,6 +59,11 @@ export class UserController {
     @Patch(':id')
     updateUserById(@Param('id', ParseIntPipe) id: number, @Body() updateUserDto: UpdateUserDto) {
         return this.userService.updateUserById(id, updateUserDto);
+    }
+
+    @Patch(':id/password')
+    updateUserPasswordById(@Param('id', ParseIntPipe) id: number, @Body() updateUserPasswordDto: UpdateUserPasswordDto) {
+        return this.userService.updateUserPasswordById(id, updateUserPasswordDto);
     }
 
     @Delete(':id')

@@ -12,8 +12,17 @@ import {
 } from "@/components/ui/sidebar"
 import { IUser } from "@/types/backend.d";
 import axios from "axios";
-import { PackageSearch, Receipt } from "lucide-react";
+import { ChevronDown, CircleChevronDown, PackageSearch, Receipt } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 interface IProps {
     data: {
@@ -45,6 +54,10 @@ export function AppSidebar(props: IProps) {
             });
     }
 
+    const openMyProfile = () => {
+        router.push('/myprofile');
+    }
+
     return (
         <Sidebar>
             <SidebarHeader />
@@ -53,8 +66,20 @@ export function AppSidebar(props: IProps) {
                     <SidebarGroupContent className="p-2 flex flex-col">
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <div>Xin chào {props.data.user?.name}</div>
-                                <div className='cursor-pointer hover:underline inline-block mt-2' onClick={() => logOut()}>Đăng xuất</div>
+                                <DropdownMenu>
+                                    <div>Xin chào
+                                        <DropdownMenuTrigger className="ml-1 cursor-pointer hover:underline inline-block">
+                                            {props.data.user?.name}
+                                            <ChevronDown className="inline size-4 hover:text-gray-500" />
+                                        </DropdownMenuTrigger>
+                                    </div>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="cursor-pointer" onClick={() => openMyProfile()}>Profile</DropdownMenuItem>
+                                        <DropdownMenuItem className="cursor-pointer" onClick={() => logOut()}>Log out</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </SidebarMenuItem>
                             <SidebarMenuItem >
                                 <Button onClick={() => props.data.setScreen('product')} className="w-[95%]"><PackageSearch />Product</Button>

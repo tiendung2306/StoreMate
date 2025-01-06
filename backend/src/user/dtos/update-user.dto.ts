@@ -16,8 +16,4 @@ export class UpdateUserDto {
     @IsOptional()
     @IsPhoneNumber('VN')
     phone?: string;
-
-    @IsOptional()
-    @IsNotEmpty()
-    password?: string;
 }

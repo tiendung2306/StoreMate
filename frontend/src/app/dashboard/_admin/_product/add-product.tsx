@@ -33,29 +33,32 @@ export default function AddProduct(props: AddProductProps) {
         const description = (document.getElementById('description') as HTMLInputElement).value;
 
         let imageUrl = "";
+        if (productImage) {
 
-        //Luu anh len server
-        const formData = new FormData();
-        formData.append('file', productImage as Blob);
-        await axios.post(`${process.env.API_URL}/v1/upload`, formData)
-            .then((res) => {
-                imageUrl = process.env.API_URL + '/public' + res.data.imageUrl;
+            //Luu anh len server
+            const formData = new FormData();
+            formData.append('file', productImage as Blob);
+            await axios.post(`${process.env.API_URL}/v1/upload`, formData)
+                .then((res) => {
+                    imageUrl = process.env.API_URL + '/public' + res.data.imageUrl;
 
-            })
-            .catch((err) => {
-                toast({
-                    variant: "destructive",
-                    title: "Thất bại",
-                    description: "Thêm ảnh sản phẩm thất bại, hãy thử lại ảnh khác!",
                 })
-                console.error(err);
-            });
+                .catch((err) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Thất bại",
+                        description: "Thêm ảnh sản phẩm thất bại, hãy thử lại ảnh khác!",
+                    })
+                    console.error(err);
+                });
 
-        console.log(imageUrl);
+            console.log(imageUrl);
+        }
+
         axios.post(`${process.env.API_URL}/v1/product`, {
             name: productName,
             price: Number.parseInt(price),
-            image: imageUrl,
+            image: productImage ? imageUrl : undefined,
             description: description,
             category_id: 1
         })
@@ -90,13 +93,24 @@ export default function AddProduct(props: AddProductProps) {
                         <Label htmlFor="product-name" className="text-right">
                             Tên sản phẩm
                         </Label>
-                        <Input id="product-name" placeholder="tên sản phẩm" className="col-span-3" />
+                        <Input
+                            id="product-name"
+                            placeholder="tên sản phẩm"
+                            className="col-span-3"
+                            autoComplete="off"
+                            autoFocus
+                        />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="price" className="text-right">
                             Giá(vnđ)
                         </Label>
-                        <Input id="price" placeholder="100000" className="col-span-3" />
+                        <Input
+                            id="price"
+                            placeholder="100000"
+                            className="col-span-3"
+                            autoComplete="off"
+                        />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="product-image" className="text-right">
@@ -113,7 +127,12 @@ export default function AddProduct(props: AddProductProps) {
                         <Label htmlFor="description" className="text-right">
                             Mô tả sản phẩm
                         </Label>
-                        <Input id="description" placeholder="mô tả sản phẩm" className="col-span-3" />
+                        <Input
+                            id="description"
+                            placeholder="mô tả sản phẩm"
+                            className="col-span-3"
+                            autoComplete="off"
+                        />
                     </div>
                 </div>
                 <DialogFooter>
