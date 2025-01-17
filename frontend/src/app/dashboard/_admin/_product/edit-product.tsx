@@ -66,7 +66,7 @@ export default function EditProduct(props: EditProductProps) {
                         title: "Thất bại",
                         description: "Thêm ảnh sản phẩm thất bại, hãy thử lại ảnh khác!",
                     })
-                    console.error(err);
+                    // console.error(err);
                 });
 
             console.log(imageUrl);

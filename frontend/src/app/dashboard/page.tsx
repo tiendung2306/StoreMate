@@ -35,7 +35,7 @@ export default function DashboardPage() {
         !isLoading && (user?.role === 'ADMIN' ? < SidebarProvider >
             <AppSidebar data={{ screen, setScreen, user, setUser }} />
             <MainContent data={{ screen, setScreen, user, setUser }} />
-        </ SidebarProvider> : <CustomerPage data={{ user, setUser }} />)
+        </ SidebarProvider> : user?.role === 'CUSTOMER' ? <CustomerPage data={{ user, setUser }} /> : null)
     );
 }
 

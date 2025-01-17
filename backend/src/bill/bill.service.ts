@@ -58,7 +58,8 @@ export class BillService {
     return this.prisma.bill.findMany({
       where: { customer_id: user_id },
       skip,
-      take: takeValue
+      take: takeValue,
+      orderBy: { date: 'desc' }
     });
   }
 

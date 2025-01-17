@@ -153,7 +153,14 @@ export default function CustomerPage(props: IProp) {
                     <Card key={bill.id} className="bg-white shadow-md rounded-lg">
                         <CardHeader>
                             <CardTitle className="text-xl font-semibold">{new Date(bill.date).toLocaleString('vi-VN')}</CardTitle>
-                            <CardDescription className="text-gray-500">{bill.status === 'SETTLED' ? 'Đã thanh toán' : 'Chưa thanh toán'}</CardDescription>
+                            <CardDescription className="text-gray-500">
+                                {bill.status === 'SETTLED' ? <div className="text-green-900">
+                                    Đã thanh toán
+                                </div>
+                                    : <div className="text-red-500">
+                                        Chưa thanh toán
+                                    </div>}
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <p className="mb-2">{bill.notes}</p>
