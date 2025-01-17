@@ -98,17 +98,25 @@ export function Right(prop: IProp) {
         }
     }, [total, isChange])
 
-    const newBill = () => {
+    const newBill = (defaultId?: number) => {
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
-            const defaultBillTab: IBillTab = { id: -1, isModify: false };
+            const defaultBillTab: IBillTab = { id: -1, isModify: false, billProducts: [] };
+            if (defaultId) defaultBillTab.id = defaultId;
             newBills.push(defaultBillTab); // make a new virtual bill
+            prop.data.setCurrentBill(newBills.length - 1);
             return newBills;
         });
     }
 
     const closeBill = (index: number) => {
+        console.log(index);
         if (prop.data.bills.length === 1) {
+            if (prop.data.bills[0].id === -1) {
+                prop.data.setBills([]);
+                newBill(-2);
+                return;
+            }
             prop.data.setBills([]);
             newBill();
             return;
@@ -117,7 +125,7 @@ export function Right(prop: IProp) {
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
             newBills.splice(index, 1);
-            console.log(newBills);
+            console.log(newBills, index);
             return newBills;
         });
 
@@ -162,11 +170,13 @@ export function Right(prop: IProp) {
                 products: products
             })
                 .then(res => {
-                    prop.data.setBills((prevBills: IBillTab[]) => {
-                        const newBills = [...prevBills];
-                        newBills[prop.data.currentBill] = res.data.bill.id;
-                        return newBills;
-                    });
+                    // prop.data.setBills((prevBills: IBillTab[]) => {
+                    //     const newBills = [...prevBills];
+                    //     console.log(newBills);
+                    //     console.log(prop.data.currentBill);
+                    //     newBills[prop.data.currentBill].id = res.data.bill.id;
+                    //     return newBills;
+                    // });
                 })
                 .catch(err => {
                     console.error(err);

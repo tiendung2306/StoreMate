@@ -13,6 +13,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import IBillTab from "./interfaces/bill";
+import { date } from "zod";
 
 
 interface IProp {
@@ -27,11 +28,13 @@ interface IProp {
 export function BillTab(prop: IProp) {
 
     const [isCloseBillDialogOpen, setIsCloseBillDialogOpen] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState("0"); //index cua bill hien tai dang an dong
 
-    const newBill = () => {
+    const newBill = (defaultId?: number) => {
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
-            const defaultBillTab: IBillTab = { id: -1, isModify: false };
+            const defaultBillTab: IBillTab = { id: -1, isModify: false, billProducts: [] };
+            if (defaultId) defaultBillTab.id = defaultId;
             newBills.push(defaultBillTab); // make a new virtual bill
             prop.data.setCurrentBill(newBills.length - 1);
             return newBills;
@@ -39,7 +42,13 @@ export function BillTab(prop: IProp) {
     }
 
     const closeBill = (index: number) => {
+        console.log(index)
         if (prop.data.bills.length === 1) {
+            if (prop.data.bills[0].id === -1) {
+                prop.data.setBills([]);
+                newBill(-2);
+                return;
+            }
             prop.data.setBills([]);
             newBill();
             return;
@@ -48,6 +57,7 @@ export function BillTab(prop: IProp) {
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
             newBills.splice(index, 1);
+            console.log(newBills, index);
             return newBills;
         });
 
@@ -57,13 +67,21 @@ export function BillTab(prop: IProp) {
         }
     }
 
-    const closeTabBill = (index: number) => {
-        if (!prop.data.bills[index].isModify) {
-            closeBill(index);
+    const getRealCurrentIndex = (currentIndex: string) => {
+        return parseInt(currentIndex.split('-')[0]);
+    }
+
+    useEffect(() => {
+        if (!prop.data.bills[getRealCurrentIndex(currentIndex)].isModify) {
+            closeBill(getRealCurrentIndex(currentIndex));
         }
         else {
             setIsCloseBillDialogOpen(true);
         }
+    }, [currentIndex]);
+
+    const closeTabBill = (index: number) => {
+        setCurrentIndex(index.toString() + '-' + Date.now().toString());
     }
 
     // Effect to set the current bill to the last bill if the bills array changes
@@ -97,7 +115,7 @@ export function BillTab(prop: IProp) {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => closeBill(index)}>Continue</AlertDialogAction>
+                                        <AlertDialogAction onClick={() => closeBill(getRealCurrentIndex(currentIndex))}>Continue</AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>

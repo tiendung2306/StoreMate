@@ -19,7 +19,6 @@ interface IProp {
 }
 
 export function Left(prop: IProp) {
-
     const setModifyBill = (index: number) => {
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
@@ -40,25 +39,45 @@ export function Left(prop: IProp) {
             newQuantities.splice(index, 1);
             return newQuantities;
         });
+
+        prop.data.setBills((prevBills: IBillTab[]) => {
+            const newBills = [...prevBills];
+            newBills[prop.data.currentBill].billProducts.splice(index, 1);
+            return newBills;
+        });
     }
 
     const decreaseQuantity = (index: number) => {
         setModifyBill(prop.data.currentBill);
+        let newQuantity = -1;
         prop.data.setQuantities((prevQuantities: number[]) => {
             const newQuantities = [...prevQuantities];
             if (newQuantities[index] > 1) {
                 newQuantities[index]--;
+                newQuantity = newQuantities[index];
             }
             return newQuantities;
+        });
+        prop.data.setBills((prevBills: IBillTab[]) => {
+            const newBills = [...prevBills];
+            if (newQuantity !== -1 && newBills[prop.data.currentBill].billProducts[index]) newBills[prop.data.currentBill].billProducts[index].quantity = newQuantity;
+            return newBills;
         });
     };
 
     const increaseQuantity = (index: number) => {
         setModifyBill(prop.data.currentBill);
+        let newQuantity = 0;
         prop.data.setQuantities((prevQuantities: number[]) => {
             const newQuantities = [...prevQuantities];
             newQuantities[index]++;
+            newQuantity = newQuantities[index];
             return newQuantities;
+        });
+        prop.data.setBills((prevBills: IBillTab[]) => {
+            const newBills = [...prevBills];
+            if (newBills[prop.data.currentBill].billProducts[index]) newBills[prop.data.currentBill].billProducts[index].quantity = newQuantity;
+            return newBills;
         });
     };
 
@@ -72,13 +91,20 @@ export function Left(prop: IProp) {
             }
             return newQuantities;
         });
+
+        prop.data.setBills((prevBills: IBillTab[]) => {
+            const newBills = [...prevBills];
+            const numericValue = parseInt(value, 10);
+            if (!isNaN(numericValue) && numericValue > 0) {
+                newBills[prop.data.currentBill].billProducts[index].quantity = numericValue;
+            }
+            return newBills;
+        });
     };
 
     const addProductToBill = (product: IProduct) => {
         setModifyBill(prop.data.currentBill);
-        console.log(prop.data.currentBill);
         const products = [...prop.data.productOnBill];
-        console.log(products);
 
         let flag = true;
         products.forEach((p: IProduct, index: number) => {
@@ -86,11 +112,23 @@ export function Left(prop: IProp) {
                 flag = false;
             }
         })
-        if (flag) products.push(product);
-        console.log(products);
+        if (flag) {
+            products.push(product);
 
-        prop.data.setProductOnBill(products);
-        prop.data.setQuantities([...prop.data.quantities, 1]);
+            prop.data.setProductOnBill(products);
+            prop.data.setQuantities([...prop.data.quantities, 1]);
+
+            prop.data.setBills((prevBills: IBillTab[]) => {
+                const newBills = [...prevBills];
+                newBills[prop.data.currentBill].billProducts.push({
+                    id: 0,
+                    bill_id: -1,
+                    product_id: product.id,
+                    quantity: 1
+                });
+                return newBills;
+            });
+        }
     }
 
     return (

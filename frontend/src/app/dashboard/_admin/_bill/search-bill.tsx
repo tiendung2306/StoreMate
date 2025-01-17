@@ -63,7 +63,7 @@ export function SearchBill(prop: IProp) {
     const newBillTab = (id: string) => {
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
-            const newBillTab: IBillTab = { id: parseInt(id), isModify: false };
+            const newBillTab: IBillTab = { id: parseInt(id), isModify: false, billProducts: [] };
             newBills.push(newBillTab);
             prop.data.setCurrentBill(newBills.length - 1);
             return newBills;
@@ -71,7 +71,7 @@ export function SearchBill(prop: IProp) {
     }
 
     const openNewBill = (id: string) => {
-        if (prop.data.bills[prop.data.currentBill].id === -1) {
+        if (prop.data.bills[prop.data.currentBill].id === -1 && prop.data.bills[prop.data.currentBill].isModify === false) {
             setBillId(id);
         }
         else {
