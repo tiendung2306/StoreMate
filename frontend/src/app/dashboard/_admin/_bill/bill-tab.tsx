@@ -12,12 +12,13 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import IBillTab from "./interfaces/bill";
 
 
 interface IProp {
     data: {
-        bills: number[];
-        setBills: React.Dispatch<React.SetStateAction<number[]>>;
+        bills: IBillTab[];
+        setBills: React.Dispatch<React.SetStateAction<IBillTab[]>>;
         currentBill: number;
         setCurrentBill: React.Dispatch<React.SetStateAction<number>>;
     }
@@ -28,9 +29,11 @@ export function BillTab(prop: IProp) {
     const [isCloseBillDialogOpen, setIsCloseBillDialogOpen] = useState(false);
 
     const newBill = () => {
-        prop.data.setBills((prevBills: number[]) => {
+        prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
-            newBills.push(-1); // make a new virtual bill
+            const defaultBillTab: IBillTab = { id: -1, isModify: false };
+            newBills.push(defaultBillTab); // make a new virtual bill
+            prop.data.setCurrentBill(newBills.length - 1);
             return newBills;
         });
     }
@@ -42,7 +45,7 @@ export function BillTab(prop: IProp) {
             return;
         }
 
-        prop.data.setBills((prevBills: number[]) => {
+        prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
             newBills.splice(index, 1);
             return newBills;
@@ -54,8 +57,13 @@ export function BillTab(prop: IProp) {
         }
     }
 
-    const openCloseBillDialog = (index: number) => {
-        setIsCloseBillDialogOpen(true);
+    const closeTabBill = (index: number) => {
+        if (!prop.data.bills[index].isModify) {
+            closeBill(index);
+        }
+        else {
+            setIsCloseBillDialogOpen(true);
+        }
     }
 
     // Effect to set the current bill to the last bill if the bills array changes
@@ -68,7 +76,7 @@ export function BillTab(prop: IProp) {
     return (
         <ScrollArea className="w-[50%]">
             <div className="flex flex-row w-full max-w-full ">
-                {prop.data.bills.map((bill: number, index: number) => {
+                {prop.data.bills.map((bill: IBillTab, index: number) => {
                     return (
                         <div key={index}
                             className={"flex items-center justify-between py-1 pl-2 pr-1 min-w-[12vh] w-[12vh] max-w-[12vh] h-[100%] mb-1 rounded-lg mr-1 cursor-pointer" + (index === prop.data.currentBill ? " bg-gray-400" : "")}
@@ -77,11 +85,9 @@ export function BillTab(prop: IProp) {
                             <span className="w-full truncate"
                                 onClick={() => {
                                     prop.data.setCurrentBill(index);
-                                }}>Bill_{bill !== -1 ? bill : "draft"}</span>
-                            <AlertDialog>
-                                <AlertDialogTrigger>
-                                    <X className="size-4 justify-end" />
-                                </AlertDialogTrigger>
+                                }}>Bill_{bill.id !== -1 ? bill.id : "draft"}</span>
+                            <X className="size-4 justify-end" onClick={() => closeTabBill(index)} />
+                            <AlertDialog open={isCloseBillDialogOpen} onOpenChange={setIsCloseBillDialogOpen}>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Are you absolutely sure to close this bill?</AlertDialogTitle>

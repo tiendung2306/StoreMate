@@ -29,6 +29,7 @@ export default function SearchProduct(prop: IProp) {
                     products.push(product);
                 });
                 setProductList(products);
+                console.log(products);
             })
             .catch(err => {
                 console.log(err);

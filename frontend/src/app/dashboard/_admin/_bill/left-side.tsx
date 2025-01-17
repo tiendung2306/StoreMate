@@ -3,6 +3,7 @@ import { useState } from "react";
 import SearchProduct from "./search-product";
 import { IProduct } from "@/types/backend.d";
 import { BillTab } from "./bill-tab";
+import IBillTab from "./interfaces/bill";
 
 interface IProp {
     data: {
@@ -10,8 +11,8 @@ interface IProp {
         setProductOnBill: React.Dispatch<React.SetStateAction<IProduct[]>>;
         quantities: number[];
         setQuantities: React.Dispatch<React.SetStateAction<number[]>>;
-        bills: number[];
-        setBills: React.Dispatch<React.SetStateAction<number[]>>;
+        bills: IBillTab[];
+        setBills: React.Dispatch<React.SetStateAction<IBillTab[]>>;
         currentBill: number;
         setCurrentBill: React.Dispatch<React.SetStateAction<number>>;
     }
@@ -19,7 +20,16 @@ interface IProp {
 
 export function Left(prop: IProp) {
 
+    const setModifyBill = (index: number) => {
+        prop.data.setBills((prevBills: IBillTab[]) => {
+            const newBills = [...prevBills];
+            newBills[index].isModify = true;
+            return newBills;
+        });
+    }
+
     const removeItem = (index: number) => {
+        setModifyBill(prop.data.currentBill);
         prop.data.setProductOnBill((prevProducts: IProduct[]) => {
             const newProducts = [...prevProducts];
             newProducts.splice(index, 1);
@@ -33,6 +43,7 @@ export function Left(prop: IProp) {
     }
 
     const decreaseQuantity = (index: number) => {
+        setModifyBill(prop.data.currentBill);
         prop.data.setQuantities((prevQuantities: number[]) => {
             const newQuantities = [...prevQuantities];
             if (newQuantities[index] > 1) {
@@ -43,6 +54,7 @@ export function Left(prop: IProp) {
     };
 
     const increaseQuantity = (index: number) => {
+        setModifyBill(prop.data.currentBill);
         prop.data.setQuantities((prevQuantities: number[]) => {
             const newQuantities = [...prevQuantities];
             newQuantities[index]++;
@@ -51,6 +63,7 @@ export function Left(prop: IProp) {
     };
 
     const handleQuantityChange = (index: number, value: string) => {
+        setModifyBill(prop.data.currentBill);
         prop.data.setQuantities((prevQuantities: number[]) => {
             const newQuantities = [...prevQuantities];
             const numericValue = parseInt(value, 10);
@@ -62,7 +75,10 @@ export function Left(prop: IProp) {
     };
 
     const addProductToBill = (product: IProduct) => {
+        setModifyBill(prop.data.currentBill);
+        console.log(prop.data.currentBill);
         const products = [...prop.data.productOnBill];
+        console.log(products);
 
         let flag = true;
         products.forEach((p: IProduct, index: number) => {
@@ -71,6 +87,7 @@ export function Left(prop: IProp) {
             }
         })
         if (flag) products.push(product);
+        console.log(products);
 
         prop.data.setProductOnBill(products);
         prop.data.setQuantities([...prop.data.quantities, 1]);

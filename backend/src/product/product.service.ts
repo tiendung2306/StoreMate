@@ -18,13 +18,13 @@ export class ProductService {
     return this.prisma.product.create({ data: createProductDto });
   }
 
-  findAll(searchContent = "", priceFrom = -1, priceTo = -1, page?: number, take?: number) {
+  async findAll(searchContent = "", priceFrom = -1, priceTo = -1, page?: number, take?: number) { //search o tab product
     const takeValue = take ? take : undefined;
     const skip = page ? page * take : undefined;
     if (priceTo === -1) {
       priceTo = 1000000000000000;
     }
-    return this.prisma.product.findMany({
+    const res = await this.prisma.product.findMany({
       where: {
         name: { contains: searchContent },
         price: {
@@ -33,11 +33,16 @@ export class ProductService {
         }
       },
       skip,
-      take: takeValue
+      take: takeValue,
+      orderBy: { id: 'desc' }
     });
+    const res_id = this.isNumeric(searchContent) ? await this.prisma.product.findMany({ where: { id: { equals: Number(searchContent) } } }) : [];
+
+    return [...res_id, ...res];
   }
 
-  async search(searchContent: string) {
+  async search(searchContent: string) { //search o tab bill
+    console.log(searchContent);
     let res_id = this.isNumeric(searchContent) ? await this.prisma.product.findMany({ where: { id: { equals: Number(searchContent) } } }) : [];
     const results = [...res_id, ... (await this.prisma.product.findMany({ where: { name: { contains: searchContent } }, take: 10 }))];
 

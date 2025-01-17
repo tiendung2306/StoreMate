@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
-import { useState } from "react"
+import React, { useState } from "react"
 
 interface AddProductProps {
     data: {
@@ -26,11 +26,26 @@ interface AddProductProps {
 export default function AddProduct(props: AddProductProps) {
     const { toast } = useToast();
 
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const productNameRef = React.createRef<HTMLInputElement>();
+    const priceRef = React.createRef<HTMLInputElement>();
+
     const addProduct = async () => {
-        const productName = (document.getElementById('product-name') as HTMLInputElement).value;
-        const price = (document.getElementById('price') as HTMLInputElement).value;
+        const productName = productNameRef.current?.value;
+        const price = priceRef.current?.value;
         const productImage = (document.getElementById('product-image') as HTMLInputElement).files?.[0];
         const description = (document.getElementById('description') as HTMLInputElement).value;
+
+        console.log(productName, price, productImage, description);
+        if (!productName || productName?.length === 0 || !price || price.length === 0) {
+            toast({
+                variant: "destructive",
+                title: "Thất bại",
+                description: "Tên sản phẩm hoặc giá không hợp lệ!",
+            })
+            return;
+        }
 
         let imageUrl = "";
         if (productImage) {
@@ -68,6 +83,7 @@ export default function AddProduct(props: AddProductProps) {
                     title: "Thành công",
                     description: "Thêm sản phẩm vào danh mục sản phẩm thành công!",
                 })
+                setIsDialogOpen(false);
             })
             .catch((err) => {
                 toast({
@@ -75,12 +91,18 @@ export default function AddProduct(props: AddProductProps) {
                     title: "Thất bại",
                     description: "Thêm sản phẩm vào danh mục sản phẩm thất bại!",
                 })
-                console.error(err);
+                // console.error(err);
             });
     }
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const input = event.target.value;
+        const numericValue = input.replace(/[^0-9]/g, ""); // Loại bỏ ký tự không phải số
+        event.target.value = numericValue;
+    };
+
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
                 <Button className="bg-green-700 mr-12">Thêm sản phẩm</Button>
             </DialogTrigger>
@@ -99,6 +121,8 @@ export default function AddProduct(props: AddProductProps) {
                             className="col-span-3"
                             autoComplete="off"
                             autoFocus
+                            maxLength={150}
+                            ref={productNameRef}
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -110,6 +134,8 @@ export default function AddProduct(props: AddProductProps) {
                             placeholder="100000"
                             className="col-span-3"
                             autoComplete="off"
+                            ref={priceRef}
+                            onChange={handleInputChange}
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">

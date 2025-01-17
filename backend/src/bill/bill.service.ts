@@ -44,7 +44,7 @@ export class BillService {
   }
 
   findAll() {
-    return this.prisma.bill.findMany();
+    return this.prisma.bill.findMany({ orderBy: { date: 'desc' } });
   }
 
   findOne(id: number) {

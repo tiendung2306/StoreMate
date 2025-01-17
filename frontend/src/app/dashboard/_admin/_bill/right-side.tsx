@@ -5,6 +5,7 @@ import axios from "axios";
 import React, { useEffect, useRef } from "react";
 import { SearchBill } from "./search-bill";
 import { useToast } from "@/hooks/use-toast";
+import IBillTab from "./interfaces/bill";
 
 interface IProp {
     data: {
@@ -12,8 +13,8 @@ interface IProp {
         setProductOnBill: React.Dispatch<React.SetStateAction<IProduct[]>>;
         quantities: number[];
         setQuantities: React.Dispatch<React.SetStateAction<number[]>>;
-        bills: number[];
-        setBills: React.Dispatch<React.SetStateAction<number[]>>;
+        bills: IBillTab[];
+        setBills: React.Dispatch<React.SetStateAction<IBillTab[]>>;
         currentBill: number;
         setCurrentBill: React.Dispatch<React.SetStateAction<number>>;
         user: IUser | null;
@@ -98,9 +99,10 @@ export function Right(prop: IProp) {
     }, [total, isChange])
 
     const newBill = () => {
-        prop.data.setBills((prevBills: number[]) => {
+        prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
-            newBills.push(-1); // make a new virtual bill
+            const defaultBillTab: IBillTab = { id: -1, isModify: false };
+            newBills.push(defaultBillTab); // make a new virtual bill
             return newBills;
         });
     }
@@ -112,7 +114,7 @@ export function Right(prop: IProp) {
             return;
         }
 
-        prop.data.setBills((prevBills: number[]) => {
+        prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
             newBills.splice(index, 1);
             console.log(newBills);
@@ -150,7 +152,7 @@ export function Right(prop: IProp) {
             }
         });
 
-        if (prop.data.bills[prop.data.currentBill] === -1) { //day la hoa don ao, can tao hoa don moi
+        if (prop.data.bills[prop.data.currentBill].id === -1) { //day la hoa don ao, can tao hoa don moi
             axios.post(`${process.env.API_URL}/v1/bill/add-bill`, {
                 admin_id: prop.data.user?.id || 1,
                 customer_id: !!customer ? customer.id : 2,
@@ -160,7 +162,7 @@ export function Right(prop: IProp) {
                 products: products
             })
                 .then(res => {
-                    prop.data.setBills((prevBills: number[]) => {
+                    prop.data.setBills((prevBills: IBillTab[]) => {
                         const newBills = [...prevBills];
                         newBills[prop.data.currentBill] = res.data.bill.id;
                         return newBills;
@@ -172,7 +174,7 @@ export function Right(prop: IProp) {
         }
         else {
             axios.put(`${process.env.API_URL}/v1/bill/update-bill`, {
-                id: prop.data.bills[prop.data.currentBill],
+                id: prop.data.bills[prop.data.currentBill].id,
                 admin_id: prop.data.user?.id || 1,
                 customer_id: !!customer ? customer.id : 2,
                 date: ISODate,

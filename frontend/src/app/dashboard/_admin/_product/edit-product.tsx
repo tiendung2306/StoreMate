@@ -28,6 +28,8 @@ interface EditProductProps {
 export default function EditProduct(props: EditProductProps) {
     const { toast } = useToast()
 
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+
     const productNameRef = React.useRef<HTMLInputElement>(null);
     const priceRef = React.useRef<HTMLInputElement>(null);
     const productImageRef = React.useRef<HTMLInputElement>(null);
@@ -38,6 +40,15 @@ export default function EditProduct(props: EditProductProps) {
         const price = priceRef.current?.value;
         const productImage = (document.getElementById('product-image') as HTMLInputElement).files?.[0];
         const description = descriptionRef.current?.value;
+
+        if (!productName || productName?.length === 0 || !price || price.length === 0) {
+            toast({
+                variant: "destructive",
+                title: "Thất bại",
+                description: "Tên sản phẩm hoặc giá không hợp lệ!",
+            })
+            return;
+        }
 
         let imageUrl = "";
         if (productImage) {
@@ -74,6 +85,7 @@ export default function EditProduct(props: EditProductProps) {
                     title: "Thành công",
                     description: "Chỉnh sửa sản phẩm thành công!",
                 })
+                setIsDialogOpen(false);
             })
             .catch((err) => {
                 toast({
@@ -86,7 +98,7 @@ export default function EditProduct(props: EditProductProps) {
     }
 
     return (
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger className="absolute right-0 top-0 bottom-0 left-0">
 
             </DialogTrigger>
@@ -100,7 +112,7 @@ export default function EditProduct(props: EditProductProps) {
                         <Label htmlFor="product-name" className="text-right">
                             Tên sản phẩm
                         </Label>
-                        <Input id="product-name" ref={productNameRef} placeholder="tên sản phẩm" defaultValue={props.data.product.name} className="col-span-3" />
+                        <Input id="product-name" ref={productNameRef} placeholder="tên sản phẩm" defaultValue={props.data.product.name} maxLength={150} className="col-span-3" />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="price" className="text-right" >

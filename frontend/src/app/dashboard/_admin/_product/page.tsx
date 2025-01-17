@@ -24,6 +24,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast";
 import EditProduct from "./edit-product";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 export default function ProductScreen() {
@@ -97,7 +103,17 @@ export default function ProductScreen() {
                                 <DropdownMenuTrigger asChild>
                                     <div className="w-[calc(100%/5)] p-4 cursor-pointer">
                                         <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
-                                            <div className="text-lg font-semibold h-[7vh] max-h-[7vh] overflow-y-hidden">{product.name}</div>
+                                            <div className="text-lg font-semibold h-[7vh] max-h-[7vh] overflow-y-hidden">
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger>{product.name}</TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{product.name}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+
+                                            </div>
                                             <div>
                                                 <img src={product.image} alt="product" className="size-36" />
                                             </div>
@@ -121,10 +137,7 @@ export default function ProductScreen() {
                                 <PaginationPrevious className="cursor-pointer" onClick={() => previousPage()} />
                             </PaginationItem>
                             <PaginationItem>
-                                <PaginationLink className="cursor-pointer" onClick={() => { setPage(1) }}>1</PaginationLink>
-                            </PaginationItem>
-                            <PaginationItem>
-                                <PaginationEllipsis />
+                                <PaginationLink className="cursor-pointer" onClick={() => { setPage(page) }}>{page}</PaginationLink>
                             </PaginationItem>
                             <PaginationItem>
                                 <PaginationNext className="cursor-pointer" onClick={() => nextPage()} />
