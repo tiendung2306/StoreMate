@@ -66,6 +66,7 @@ export function Left(prop: IProp) {
     };
 
     const increaseQuantity = (index: number) => {
+        if (prop.data.quantities[index] >= 999) return;
         setModifyBill(prop.data.currentBill);
         let newQuantity = 0;
         prop.data.setQuantities((prevQuantities: number[]) => {
@@ -85,8 +86,9 @@ export function Left(prop: IProp) {
         setModifyBill(prop.data.currentBill);
         prop.data.setQuantities((prevQuantities: number[]) => {
             const newQuantities = [...prevQuantities];
-            const numericValue = parseInt(value, 10);
+            let numericValue = parseInt(value, 10);
             if (!isNaN(numericValue) && numericValue > 0) {
+                if (numericValue >= 1000) numericValue = 999;
                 newQuantities[index] = numericValue;
             }
             return newQuantities;
@@ -94,8 +96,9 @@ export function Left(prop: IProp) {
 
         prop.data.setBills((prevBills: IBillTab[]) => {
             const newBills = [...prevBills];
-            const numericValue = parseInt(value, 10);
-            if (!isNaN(numericValue) && numericValue > 0) {
+            let numericValue = parseInt(value, 10);
+            if (!isNaN(numericValue) && numericValue > 0)
+                if (numericValue >= 1000) numericValue = 999; {
                 newBills[prop.data.currentBill].billProducts[index].quantity = numericValue;
             }
             return newBills;
