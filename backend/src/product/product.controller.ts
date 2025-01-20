@@ -22,6 +22,11 @@ export class ProductController {
     return this.productService.findAll(searchContent, priceFrom, priceTo, +page, +take);
   }
 
+  @Get('max-price')
+  getMaxPrice() {
+    return this.productService.getMaxPrice();
+  }
+
   @Get('search')
   search(@Query('searchContent') searchContent: string) {
     return this.productService.search(searchContent);

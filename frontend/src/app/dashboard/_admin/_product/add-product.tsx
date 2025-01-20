@@ -78,7 +78,10 @@ export default function AddProduct(props: AddProductProps) {
             category_id: 1
         })
             .then((res) => {
-                props.data.setIsProductChanged(!props.data.isProductChanged);
+                // props.data.setIsProductChanged(!props.data.isProductChanged);
+                setTimeout(() => {
+                    props.data.setIsProductChanged(!props.data.isProductChanged);
+                }, 0);
                 toast({
                     title: "Thành công",
                     description: "Thêm sản phẩm vào danh mục sản phẩm thành công!",

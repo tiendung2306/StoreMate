@@ -11,10 +11,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { useState } from "react"
+import axios from "axios"
+import { useEffect, useState } from "react"
 
 interface IProp {
     data: {
+        isProductChanged: boolean,
+        setIsProductChanged: (isProductChanged: boolean) => void,
         searchFilter: string,
         setSearchFilter: (searchFilter: string) => void,
         priceFrom: number,
@@ -28,13 +31,40 @@ export default function SearchProduct(prop: IProp) {
 
     const [productName, setProductName] = useState('')
     const minPriceFilter = 0;
-    const maxPriceFilter = 1000000;
+    const maxSliderPrice = 10000000;
+    const [maxPriceFilter, setMaxPriceFilter] = useState(maxSliderPrice);
     const [priceRange, setPriceRange] = useState([minPriceFilter, maxPriceFilter])
     const [resetSlider, setResetSlider] = useState(false);
+    const [forceResetSlider, setForceResetSlider] = useState(false);
+
+    useEffect(() => {
+        axios.get(`${process.env.API_URL}/v1/product/max-price`)
+            .then((res) => {
+                const maxPrice = res.data || 1000000;
+                const roundedMaxPrice = Math.ceil(maxPrice / 1000000) * 1000000;
+                const maxPriceFilter = roundedMaxPrice > maxSliderPrice ? maxSliderPrice : roundedMaxPrice;
+                setMaxPriceFilter(maxPriceFilter);
+                setPriceRange([minPriceFilter, maxPriceFilter]);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get(`${process.env.API_URL}/v1/product/max-price`)
+            .then((res) => {
+                const maxPrice = res.data || 1000000;
+                const roundedMaxPrice = Math.ceil(maxPrice / 1000000) * 1000000;
+                const maxPriceFilter = roundedMaxPrice > maxSliderPrice ? maxSliderPrice : roundedMaxPrice;
+                setMaxPriceFilter(maxPriceFilter);
+                setPriceRange([minPriceFilter, maxPriceFilter]);
+                prop.data.setPriceFrom(minPriceFilter);
+                prop.data.setPriceTo(maxPriceFilter);
+                setForceResetSlider(!forceResetSlider);
+            });
+    }, [prop.data.isProductChanged]);
 
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     }
 
     const resetFilter = () => {
@@ -85,9 +115,10 @@ export default function SearchProduct(prop: IProp) {
                     <Label className="font-bold">Khoảng giá:</Label>
                     {!resetSlider && (
                         <Slider
+                            key={minPriceFilter.toString() + maxPriceFilter.toString() + forceResetSlider.toString()}
                             min={minPriceFilter}
                             max={maxPriceFilter}
-                            step={1000}
+                            step={10000}
                             value={priceRange}
                             onValueChange={(newRange) => {
                                 setPriceRange(newRange);
@@ -96,7 +127,10 @@ export default function SearchProduct(prop: IProp) {
                             }}
                             className="mt-2"
                             minStepsBetweenThumbs={0}
-                            formatLabel={(value) => formatPrice(value)}
+                            formatLabel={(value) => {
+                                // console.log(value)
+                                return value === maxSliderPrice ? `>=${formatPrice(value)}` : formatPrice(value)
+                            }}
                         />
                     )}
 

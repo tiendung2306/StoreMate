@@ -80,7 +80,9 @@ export default function EditProduct(props: EditProductProps) {
             category_id: 1
         })
             .then((res) => {
-                props.data.setIsProductChanged(!props.data.isProductChanged);
+                setTimeout(() => {
+                    props.data.setIsProductChanged(!props.data.isProductChanged);
+                }, 0);
                 toast({
                     title: "Thành công",
                     description: "Chỉnh sửa sản phẩm thành công!",

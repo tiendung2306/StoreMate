@@ -40,12 +40,17 @@ export default function ProductScreen() {
     const [page, setPage] = useState<number>(1);
     const [searchFilter, setSearchFilter] = useState<string>('');
     const [priceFrom, setPriceFrom] = useState<number>(0);
-    const [priceTo, setPriceTo] = useState<number>(1000000);
+    const [priceTo, setPriceTo] = useState<number>(10000000);
 
     const LIMIT = 10;
 
     useEffect(() => {
-        axios.get(`${API_URL}/v1/product/?searchContent=${searchFilter}&priceFrom=${priceFrom}&priceTo=${priceTo}&page=${page - 1}&limit=${LIMIT}`)
+        console.log('fetching data', priceFrom, priceTo)
+        let queryPriceTo = priceTo
+        if (priceTo === 10000000) {
+            queryPriceTo = -1;
+        }
+        axios.get(`${API_URL}/v1/product/?searchContent=${searchFilter}&priceFrom=${priceFrom}&priceTo=${queryPriceTo}&page=${page - 1}&limit=${LIMIT}`)
             .then((res) => {
                 setData(res.data)
             })
@@ -77,7 +82,11 @@ export default function ProductScreen() {
     }
 
     const nextPage = () => {
-        axios.get(`${API_URL}/v1/product/?searchContent=${searchFilter}&priceFrom=${priceFrom}&priceTo=${priceTo}&page=${page}&limit=${LIMIT}`)
+        let queryPriceTo = priceTo
+        if (priceTo === 10000000) {
+            queryPriceTo = -1;
+        }
+        axios.get(`${API_URL}/v1/product/?searchContent=${searchFilter}&priceFrom=${priceFrom}&priceTo=${queryPriceTo}&page=${page}&limit=${LIMIT}`)
             .then((res) => {
                 if (res.data.length > 0) {
                     setPage(page + 1);
@@ -91,7 +100,7 @@ export default function ProductScreen() {
     return (
         <div className="h-full w-full flex flex-col">
             <div className="w-full h-[96px] flex items-end justify-between">
-                <SearchProduct data={{ searchFilter, setSearchFilter, priceFrom, setPriceFrom, priceTo, setPriceTo }} />
+                <SearchProduct data={{ isProductChanged, setIsProductChanged, searchFilter, setSearchFilter, priceFrom, setPriceFrom, priceTo, setPriceTo }} />
                 <AddProduct data={{ isProductChanged, setIsProductChanged }} />
             </div>
 
@@ -103,10 +112,10 @@ export default function ProductScreen() {
                                 <DropdownMenuTrigger asChild>
                                     <div className="w-[calc(100%/5)] p-4 cursor-pointer">
                                         <div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
-                                            <div className="text-lg font-semibold h-[7vh] max-h-[7vh] overflow-y-hidden">
+                                            <div className="text-lg font-semibold h-[7vh] max-h-[7vh] overflow-y-hidden max-w-full">
                                                 <TooltipProvider>
                                                     <Tooltip>
-                                                        <TooltipTrigger>{product.name}</TooltipTrigger>
+                                                        <TooltipTrigger className="truncate w-full">{product.name}</TooltipTrigger>
                                                         <TooltipContent>
                                                             <p>{product.name}</p>
                                                         </TooltipContent>

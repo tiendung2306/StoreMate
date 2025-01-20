@@ -18,11 +18,20 @@ export class ProductService {
     return this.prisma.product.create({ data: createProductDto });
   }
 
+  async getMaxPrice() {
+    const res = await this.prisma.product.findMany({
+      orderBy: { price: 'desc' },
+      take: 1,
+      select: { price: true }
+    });
+    return res.length > 0 ? res[0].price : null;
+  }
+
   async findAll(searchContent = "", priceFrom = -1, priceTo = -1, page?: number, take?: number) { //search o tab product
     const takeValue = take ? take : undefined;
     const skip = page ? page * take : undefined;
     if (priceTo === -1) {
-      priceTo = 1000000000000000;
+      priceTo = undefined;
     }
     const res = await this.prisma.product.findMany({
       where: {
