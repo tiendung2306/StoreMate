@@ -5,9 +5,6 @@ export class CreateProductDto {
     name: string;
 
     @IsNumber()
-    category_id: number;
-
-    @IsNumber()
     price: number;
 
     @IsOptional()

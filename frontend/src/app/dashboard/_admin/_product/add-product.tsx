@@ -75,7 +75,6 @@ export default function AddProduct(props: AddProductProps) {
             price: Number.parseInt(price),
             image: productImage ? imageUrl : undefined,
             description: description,
-            category_id: 1
         })
             .then((res) => {
                 // props.data.setIsProductChanged(!props.data.isProductChanged);

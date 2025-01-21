@@ -7,10 +7,6 @@ export class UpdateProductDto {
 
     @IsOptional()
     @IsNumber()
-    category_id: number;
-
-    @IsOptional()
-    @IsNumber()
     price?: number;
 
     @IsOptional()
