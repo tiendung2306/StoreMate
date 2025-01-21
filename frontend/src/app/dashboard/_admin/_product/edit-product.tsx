@@ -113,25 +113,35 @@ export default function EditProduct(props: EditProductProps) {
                         <Label htmlFor="product-name" className="text-right">
                             Tên sản phẩm
                         </Label>
-                        <Input id="product-name" ref={productNameRef} placeholder="tên sản phẩm" defaultValue={props.data.product.name} maxLength={150} className="col-span-3" />
+                        <Input id="product-name" ref={productNameRef} placeholder="tên sản phẩm" defaultValue={props.data.product.name} maxLength={150} className="col-span-3"
+                            autoFocus
+                            autoComplete="off"
+                        />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="price" className="text-right" >
                             Giá(vnđ)
                         </Label>
-                        <Input id="price" ref={priceRef} placeholder="100000" className="col-span-3" defaultValue={props.data.product.price} />
+                        <Input
+                            autoComplete="off"
+                            id="price" ref={priceRef} placeholder="100000" className="col-span-3" defaultValue={props.data.product.price}
+                        />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="product-image" className="text-right">
                             Chọn ảnh
                         </Label>
-                        <Input type="file" id="product-image" accept="image/png, image/jpeg" className="col-span-3" />
+                        <Input type="file" id="product-image" accept="image/png, image/jpeg" className="col-span-3"
+                            autoComplete="off"
+                        />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="description" className="text-right">
                             Mô tả sản phẩm
                         </Label>
-                        <Input id="description" ref={descriptionRef} placeholder="mô tả sản phẩm" className="col-span-3" defaultValue={props.data.product.description} />
+                        <Input id="description" ref={descriptionRef} placeholder="mô tả sản phẩm" className="col-span-3" defaultValue={props.data.product.description}
+                            autoComplete="off"
+                        />
                     </div>
                 </div>
                 <DialogFooter>

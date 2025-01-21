@@ -104,6 +104,7 @@ export default function SearchProduct(prop: IProp) {
                         id="product-name"
                         placeholder="Nhập tên sản phẩm"
                         value={productName}
+                        autoComplete="off"
                         onChange={(e) => {
                             setProductName(e.target.value)
                             prop.data.setSearchFilter(e.target.value)
