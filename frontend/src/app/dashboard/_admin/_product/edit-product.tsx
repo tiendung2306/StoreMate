@@ -77,7 +77,6 @@ export default function EditProduct(props: EditProductProps) {
             price: !!price ? Number.parseInt(price) : undefined,
             image: productImage ? imageUrl : undefined,
             description: description,
-            category_id: 1
         })
             .then((res) => {
                 setTimeout(() => {

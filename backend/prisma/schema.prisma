@@ -40,17 +40,7 @@ model Product {
   description String?       @db.LongText
   price       Float
   image       String?       @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw_HeSzHfBorKS4muw4IIeVvvRgnhyO8Gn8w&s") @db.VarChar(255)
-  category_id Int
-  category    Category?     @relation(fields: [category_id], references: [id])
   BillProduct BillProduct[]
-}
-
-model Category {
-  id          Int       @id @default(autoincrement())
-  title       String    @unique
-  image       String    @default("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw_HeSzHfBorKS4muw4IIeVvvRgnhyO8Gn8w&s") @db.VarChar(255)
-  description String?   @db.LongText
-  products    Product[]
 }
 
 model Bill {
