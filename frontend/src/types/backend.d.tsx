@@ -40,3 +40,19 @@ export interface IBillProduct {
     product_id: number;
     quantity: number;
 }
+
+export interface IProductOnBillDetail {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+}
+
+export interface IBillProductDetail {
+    id: string;
+    date: string;
+    notes: string;
+    status: string;
+    total: number;
+    products: IProductOnBillDetail[];
+}

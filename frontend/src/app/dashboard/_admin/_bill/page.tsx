@@ -1,11 +1,11 @@
 'use client'
-import { use, useEffect, useState } from "react";
+import React from 'react'
+import { useEffect, useState } from "react";
 import { Left } from "./left-side";
 import { Right } from "./right-side";
 import { IBillProduct, IProduct, IUser } from "@/types/backend.d";
 import axios from "axios";
 import IBillTab from "./interfaces/bill";
-import { get } from "http";
 
 interface IProps {
     data: {

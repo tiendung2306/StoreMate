@@ -5,14 +5,15 @@ import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ProductService {
-
   isNumeric(str: string) {
-    if (typeof str != "string") return false // we only process strings!  
-    return !isNaN(Number(str)) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-      !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    if (typeof str != 'string') return false; // we only process strings!
+    return (
+      !isNaN(Number(str)) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+      !isNaN(parseFloat(str))
+    ); // ...and ensure strings of whitespace fail
   }
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   create(createProductDto: CreateProductDto) {
     return this.prisma.product.create({ data: createProductDto });
@@ -22,12 +23,19 @@ export class ProductService {
     const res = await this.prisma.product.findMany({
       orderBy: { price: 'desc' },
       take: 1,
-      select: { price: true }
+      select: { price: true },
     });
     return res.length > 0 ? res[0].price : null;
   }
 
-  async findAll(searchContent = "", priceFrom = -1, priceTo = -1, page?: number, take?: number) { //search o tab product
+  async findAll(
+    searchContent = '',
+    priceFrom = -1,
+    priceTo = -1,
+    page?: number,
+    take?: number,
+  ) {
+    //search o tab product
     const takeValue = take ? take : undefined;
     const skip = page ? page * take : undefined;
     if (priceTo === -1) {
@@ -38,22 +46,37 @@ export class ProductService {
         name: { contains: searchContent },
         price: {
           gte: priceFrom,
-          lte: priceTo
-        }
+          lte: priceTo,
+        },
       },
       skip,
       take: takeValue,
-      orderBy: { id: 'desc' }
+      orderBy: { id: 'desc' },
     });
-    const res_id = this.isNumeric(searchContent) ? await this.prisma.product.findMany({ where: { id: { equals: Number(searchContent) } } }) : [];
+    const res_id = this.isNumeric(searchContent)
+      ? await this.prisma.product.findMany({
+          where: { id: { equals: Number(searchContent) } },
+        })
+      : [];
 
     return [...res_id, ...res];
   }
 
-  async search(searchContent: string) { //search o tab bill
+  async search(searchContent: string) {
+    //search o tab bill
     console.log(searchContent);
-    let res_id = this.isNumeric(searchContent) ? await this.prisma.product.findMany({ where: { id: { equals: Number(searchContent) } } }) : [];
-    const results = [...res_id, ... (await this.prisma.product.findMany({ where: { name: { contains: searchContent } }, take: 10 }))];
+    const res_id = this.isNumeric(searchContent)
+      ? await this.prisma.product.findMany({
+          where: { id: { equals: Number(searchContent) } },
+        })
+      : [];
+    const results = [
+      ...res_id,
+      ...(await this.prisma.product.findMany({
+        where: { name: { contains: searchContent } },
+        take: 10,
+      })),
+    ];
 
     return results;
   }
@@ -63,7 +86,10 @@ export class ProductService {
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
-    return this.prisma.product.update({ where: { id }, data: updateProductDto });
+    return this.prisma.product.update({
+      where: { id },
+      data: updateProductDto,
+    });
   }
 
   remove(id: number) {

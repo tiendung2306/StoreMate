@@ -1,3 +1,4 @@
+import React from "react";
 import { CirclePlus, X } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
@@ -10,10 +11,8 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import IBillTab from "./interfaces/bill";
-import { date } from "zod";
 
 
 interface IProp {

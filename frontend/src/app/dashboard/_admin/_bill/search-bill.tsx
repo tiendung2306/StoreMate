@@ -44,7 +44,7 @@ export function SearchBill(prop: IProp) {
     const [open, setOpen] = React.useState(false)
     const [bills, setBills] = React.useState<ISearchBills[]>([])
 
-    let [users, setUsers] = React.useState<IUser[]>([]);
+    const [users, setUsers] = React.useState<IUser[]>([]);
     React.useEffect(() => {
         axios.get(`${process.env.API_URL}/v1/users`, { withCredentials: true })
             .then(res => {
@@ -116,7 +116,7 @@ export function SearchBill(prop: IProp) {
                 >
                     {!!prop.data.bills[prop.data.currentBill] && prop.data.bills[prop.data.currentBill].id !== -1
                         ? bills.find((bill) => {
-                            if (!!prop.data.bills[prop.data.currentBill])
+                            if (prop.data.bills[prop.data.currentBill])
                                 return bill.value === prop.data.bills[prop.data.currentBill].id.toString();
                             return "";
                         })?.label

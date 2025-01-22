@@ -25,7 +25,7 @@ interface IProp {
 export function Right(prop: IProp) {
 
     const getCurrentDate = () => {
-        var d = new Date(),
+        const d = new Date(),
             minutes = d.getMinutes().toString().length == 1 ? '0' + d.getMinutes() : d.getMinutes(),
             hours = d.getHours().toString().length == 1 ? '0' + d.getHours() : d.getHours(),
             ampm = d.getHours() >= 12 ? 'pm' : 'am',
@@ -163,20 +163,14 @@ export function Right(prop: IProp) {
         if (prop.data.bills[prop.data.currentBill].id === -1) { //day la hoa don ao, can tao hoa don moi
             axios.post(`${process.env.API_URL}/v1/bill/add-bill`, {
                 admin_id: prop.data.user?.id || 1,
-                customer_id: !!customer ? customer.id : 2,
+                customer_id: customer ? customer.id : 2,
                 date: ISODate,
                 notes: notes,
                 status: status,
                 products: products
             })
-                .then(res => {
-                    // prop.data.setBills((prevBills: IBillTab[]) => {
-                    //     const newBills = [...prevBills];
-                    //     console.log(newBills);
-                    //     console.log(prop.data.currentBill);
-                    //     newBills[prop.data.currentBill].id = res.data.bill.id;
-                    //     return newBills;
-                    // });
+                .then(() => {
+
                 })
                 .catch(err => {
                     console.error(err);
@@ -186,13 +180,13 @@ export function Right(prop: IProp) {
             axios.put(`${process.env.API_URL}/v1/bill/update-bill`, {
                 id: prop.data.bills[prop.data.currentBill].id,
                 admin_id: prop.data.user?.id || 1,
-                customer_id: !!customer ? customer.id : 2,
+                customer_id: customer ? customer.id : 2,
                 date: ISODate,
                 notes: notes,
                 status: status,
                 products: products
             })
-                .then(res => {
+                .then(() => {
 
                 })
                 .catch(err => {

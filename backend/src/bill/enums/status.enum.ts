@@ -1,5 +1,5 @@
 export enum Status {
-    PENDING = 'PENDING',
-    SETTLED = 'SETTLED',
-    REFUNDED = 'REFUNDED',
+  PENDING = 'PENDING',
+  SETTLED = 'SETTLED',
+  REFUNDED = 'REFUNDED',
 }

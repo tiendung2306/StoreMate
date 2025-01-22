@@ -1,12 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) { }
-
+  constructor(private readonly productService: ProductService) {}
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
@@ -14,12 +23,26 @@ export class ProductController {
   }
 
   @Get()
-  findAll(@Query('searchContent') searchContent?: string, @Query('priceFrom', ParseIntPipe) priceFrom?: number, @Query('priceTo', ParseIntPipe) priceTo?: number, @Query('page') page?: string, @Query('limit') take?: string) {
-    if (searchContent === undefined) searchContent = "";
+  findAll(
+    @Query('searchContent') searchContent?: string,
+    @Query('priceFrom', ParseIntPipe) priceFrom?: number,
+    @Query('priceTo', ParseIntPipe) priceTo?: number,
+    @Query('page') page?: string,
+    @Query('limit') take?: string,
+  ) {
+    if (searchContent === undefined) searchContent = '';
     if (!!page && !take) {
-      throw new Error('You must provide the "take" query parameter if you provide the "page" query parameter');
+      throw new Error(
+        'You must provide the "take" query parameter if you provide the "page" query parameter',
+      );
     }
-    return this.productService.findAll(searchContent, priceFrom, priceTo, +page, +take);
+    return this.productService.findAll(
+      searchContent,
+      priceFrom,
+      priceTo,
+      +page,
+      +take,
+    );
   }
 
   @Get('max-price')
@@ -38,7 +61,10 @@ export class ProductController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
     return this.productService.update(id, updateProductDto);
   }
 
@@ -46,6 +72,4 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productService.remove(id);
   }
-
-
 }

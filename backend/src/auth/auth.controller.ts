@@ -7,8 +7,7 @@ import { UserRole } from 'src/user/dtos/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -18,7 +17,11 @@ export class AuthController {
 
   @Get('/logout')
   logout(@Req() request: Request) {
-    const req = request as Request & { isAuthenticated: () => boolean; user: any; session: any };
+    const req = request as Request & {
+      isAuthenticated: () => boolean;
+      user: any;
+      session: any;
+    };
     if (req.isAuthenticated()) {
       req.session.destroy((err: any) => {
         if (err) {
@@ -32,8 +35,10 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body('password') userPassword: string,
-    @Body('phone') phone: string,) {
+  async register(
+    @Body('password') userPassword: string,
+    @Body('phone') phone: string,
+  ) {
     // Implement registration logic here
     const saltOrRounds = 10;
     const hashedPassword = await bcrypt.hash(userPassword, saltOrRounds);

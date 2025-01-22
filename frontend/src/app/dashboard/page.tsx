@@ -1,6 +1,7 @@
 "use client";
+import React from "react";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ProductScreen from "./_admin/_product/page";
 import { AppSidebar } from "./_admin/_sidebar/app-sidebar";
 import BillScreen from "./_admin/_bill/page";

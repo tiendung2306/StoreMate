@@ -1,5 +1,5 @@
+import React from "react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import SearchProduct from "./search-product";
 import { IProduct } from "@/types/backend.d";
 import { BillTab } from "./bill-tab";
@@ -110,7 +110,7 @@ export function Left(prop: IProp) {
         const products = [...prop.data.productOnBill];
 
         let flag = true;
-        products.forEach((p: IProduct, index: number) => {
+        products.forEach((p: IProduct) => {
             if (p.id === product.id) {
                 flag = false;
             }
