@@ -10,7 +10,6 @@ import {
   Req,
   UseGuards,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { UserService } from './user.service';
