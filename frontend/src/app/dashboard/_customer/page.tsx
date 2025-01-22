@@ -1,17 +1,16 @@
-import { IBill, IBillProduct, IUser } from "@/types/backend.d";
+import React from "react"
+import { IBill, IBillProduct, IBillProductDetail, IProductOnBillDetail, IUser } from "@/types/backend.d";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { set } from "zod";
 
 interface IProp {
     data: {
@@ -22,7 +21,7 @@ interface IProp {
 
 export default function CustomerPage(props: IProp) {
     const [bills, setBills] = useState<IBill[]>([]);
-    const [billData, setBillData] = useState<any[]>([]);
+    const [billData, setBillData] = useState<IBillProductDetail[]>([]);
     const router = useRouter();
 
     const [page, setPage] = useState(0);
@@ -142,7 +141,7 @@ export default function CustomerPage(props: IProp) {
     return (
         <div className="container mx-auto px-4 py-6">
             <div className="flex justify-between items-center flex-row mb-4">
-                <h1 className="text-2xl font-bold">{props.data.user?.name}'s Bills</h1>
+                <h1 className="text-2xl font-bold">{props.data.user?.name}&apos;s Bills</h1>
                 <div className="flex space-x-4">
                     <div className="cursor-pointer hover:underline inline-block" onClick={() => { router.push('/myprofile') }}>My Profile</div>
                     <div className='cursor-pointer hover:underline inline-block' onClick={() => logOut()}>Đăng xuất</div>
@@ -168,7 +167,7 @@ export default function CustomerPage(props: IProp) {
                                 Tổng: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(bill.total)}
                             </p>
                             <div>
-                                {bill.products.map((product: any) => (
+                                {bill.products.map((product: IProductOnBillDetail) => (
                                     <div key={product.id} className="border-t border-gray-200 py-2">
                                         {/* <p>ID sản phẩm: {product.product_id}</p> */}
                                         <p>Tên sản phẩm: {product.name}</p>

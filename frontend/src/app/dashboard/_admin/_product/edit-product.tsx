@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { useToast } from "@/hooks/use-toast"
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { IProduct } from "@/types/backend.d"
 import React from "react"
 
@@ -32,7 +31,6 @@ export default function EditProduct(props: EditProductProps) {
 
     const productNameRef = React.useRef<HTMLInputElement>(null);
     const priceRef = React.useRef<HTMLInputElement>(null);
-    const productImageRef = React.useRef<HTMLInputElement>(null);
     const descriptionRef = React.useRef<HTMLInputElement>(null);
 
     const editProduct = async (product_id: number) => {
@@ -60,7 +58,7 @@ export default function EditProduct(props: EditProductProps) {
                     imageUrl = process.env.API_URL + '/public' + res.data.imageUrl;
 
                 })
-                .catch((err) => {
+                .catch(() => {
                     toast({
                         variant: "destructive",
                         title: "Thất bại",
@@ -74,11 +72,11 @@ export default function EditProduct(props: EditProductProps) {
 
         axios.patch(`${process.env.API_URL}/v1/product/${product_id}`, {
             name: productName,
-            price: !!price ? Number.parseInt(price) : undefined,
+            price: price ? Number.parseInt(price) : undefined,
             image: productImage ? imageUrl : undefined,
             description: description,
         })
-            .then((res) => {
+            .then(() => {
                 setTimeout(() => {
                     props.data.setIsProductChanged(!props.data.isProductChanged);
                 }, 0);

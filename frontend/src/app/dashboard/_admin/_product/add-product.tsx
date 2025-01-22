@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -76,7 +75,7 @@ export default function AddProduct(props: AddProductProps) {
             image: productImage ? imageUrl : undefined,
             description: description,
         })
-            .then((res) => {
+            .then(() => {
                 // props.data.setIsProductChanged(!props.data.isProductChanged);
                 setTimeout(() => {
                     props.data.setIsProductChanged(!props.data.isProductChanged);
@@ -87,7 +86,7 @@ export default function AddProduct(props: AddProductProps) {
                 })
                 setIsDialogOpen(false);
             })
-            .catch((err) => {
+            .catch(() => {
                 toast({
                     variant: "destructive",
                     title: "Thất bại",

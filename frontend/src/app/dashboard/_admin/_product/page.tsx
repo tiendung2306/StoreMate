@@ -1,8 +1,7 @@
-import { Button } from "@/components/ui/button";
+import React from "react"
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/pagination"
 import AddProduct from "./add-product";
 import SearchProduct from "./search-product";
-import { Key, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IProduct } from "@/types/backend.d";
 import axios from 'axios';
 
@@ -18,8 +17,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from "@/hooks/use-toast";
@@ -65,7 +62,7 @@ export default function ProductScreen() {
 
     const removeProduct = (product_id: number) => {
         axios.delete(`${API_URL}/v1/product/${product_id}`)
-            .then((res) => {
+            .then(() => {
                 setIsProductChanged(!isProductChanged);
                 toast({
                     variant: "destructive",

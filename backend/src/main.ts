@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as session from 'express-session';
-import * as passport from "passport"
+import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -21,8 +21,8 @@ async function bootstrap() {
     }),
   );
 
-  app.use(passport.initialize())
-  app.use(passport.session())
+  app.use(passport.initialize());
+  app.use(passport.session());
 
   // Serve static files from the "public" directory
   app.useStaticAssets(join(__dirname, '..', 'public'), {

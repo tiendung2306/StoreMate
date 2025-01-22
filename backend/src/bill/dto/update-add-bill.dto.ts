@@ -1,31 +1,37 @@
-import { IsArray, IsDateString, IsEnum, IsNumber, IsString } from "class-validator";
-import { Status } from "../enums/status.enum";
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsString,
+} from 'class-validator';
+import { Status } from '../enums/status.enum';
 
 class Product {
-    @IsNumber()
-    product_id: number;
-    @IsNumber()
-    quantity: number;
+  @IsNumber()
+  product_id: number;
+  @IsNumber()
+  quantity: number;
 }
 
 export class UpdateAddBillDto {
-    @IsNumber()
-    id: number;
+  @IsNumber()
+  id: number;
 
-    @IsNumber()
-    admin_id: number;
-    @IsNumber()
-    customer_id: number;
+  @IsNumber()
+  admin_id: number;
+  @IsNumber()
+  customer_id: number;
 
-    @IsDateString()
-    date: Date;
+  @IsDateString()
+  date: Date;
 
-    @IsString()
-    notes: string;
+  @IsString()
+  notes: string;
 
-    @IsEnum(Status)
-    status: string;
+  @IsEnum(Status)
+  status: string;
 
-    @IsArray()
-    products: Product[];
+  @IsArray()
+  products: Product[];
 }

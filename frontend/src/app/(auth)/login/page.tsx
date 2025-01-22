@@ -1,5 +1,6 @@
 'use client'
 
+import React from "react"
 import Link from "next/link"
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
 import { useRef, useState } from "react"
@@ -28,7 +29,7 @@ export default function Login() {
                 console.log(res.data);
                 router.push('/dashboard');
             })
-            .catch((err) => {
+            .catch(() => {
                 alert('Invalid phone number or password');
             })
         // router.push('/dashboard')
@@ -117,7 +118,7 @@ export default function Login() {
                         </Link>
 
                         <div className="text-center text-sm text-gray-600">
-                            Don't have an account?{" "}
+                            Don&apos;t have an account?{" "}
                             <Link href="/signup" className="font-semibold hover:text-gray-900">
                                 Sign up
                             </Link>
