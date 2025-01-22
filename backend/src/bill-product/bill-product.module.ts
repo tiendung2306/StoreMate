@@ -3,6 +3,6 @@ import { BillProductService } from './bill-product.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Module({
-    providers: [PrismaService, BillProductService],
+  providers: [PrismaService, BillProductService],
 })
-export class BillProductModule { }
+export class BillProductModule {}

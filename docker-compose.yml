@@ -1,0 +1,56 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    environment:
+      - API_URL=http://backend:3000
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: backend
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      - PORT=3000
+      - FRONTEND_URL=http://frontend:8080
+      - DATABASE_URL=mysql://root:dung2306@localhost:3306/my_db
+      - DATABASE_PASSWORD=dung2306
+      - DATABASE_NAME=my_db
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: dung2306
+      MYSQL_DATABASE: my_db
+    volumes:
+      - db_data:/var/lib/mysql
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:

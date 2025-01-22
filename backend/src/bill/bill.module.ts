@@ -10,4 +10,4 @@ import { BillProductService } from 'src/bill-product/bill-product.service';
   controllers: [BillController],
   providers: [PrismaService, BillService, BillProductService],
 })
-export class BillModule { }
+export class BillModule {}

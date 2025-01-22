@@ -10,6 +10,12 @@ import { SessionSerializer } from './serializers/session.serializer';
 @Module({
   imports: [PassportModule.register({ session: true })],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, UserService, PrismaService, SessionSerializer],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    UserService,
+    PrismaService,
+    SessionSerializer,
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

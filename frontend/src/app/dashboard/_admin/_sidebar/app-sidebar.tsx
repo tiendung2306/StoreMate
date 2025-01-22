@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
     Sidebar,
@@ -5,14 +6,13 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenuItem,
     SidebarMenu
 } from "@/components/ui/sidebar"
 import { IUser } from "@/types/backend.d";
 import axios from "axios";
-import { ChevronDown, CircleChevronDown, PackageSearch, Receipt } from "lucide-react";
+import { ChevronDown, PackageSearch, Receipt } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
     DropdownMenu,
