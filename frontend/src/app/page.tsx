@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 
 export default function Home() {
@@ -48,7 +49,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Read our docs
+            Read my docs
           </a>
         </div>
       </main>
