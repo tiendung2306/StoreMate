@@ -11,7 +11,6 @@ import { AuthModule } from './auth/auth.module';
 import { LocalStrategy } from './auth/strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
-import { UserService } from './user/user.service';
 import { PrismaService } from './prisma.service';
 
 @Module({
@@ -26,13 +25,7 @@ import { PrismaService } from './prisma.service';
     PassportModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    LocalStrategy,
-    AuthService,
-    UserService,
-    PrismaService,
-  ],
+  providers: [AppService, LocalStrategy, AuthService, PrismaService],
 })
 // eslint-disable-next-line prettier/prettier
 export class AppModule { }
