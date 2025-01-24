@@ -7,7 +7,7 @@ import { AddBillDto } from './dto/add-bill.dto';
 import { Prisma } from '@prisma/client';
 import { Status } from './enums/status.enum';
 import { UpdateAddBillDto } from './dto/update-add-bill.dto';
-import _ from 'lodash';
+import { omit } from 'lodash';
 
 @Injectable()
 export class BillService {
@@ -67,7 +67,8 @@ export class BillService {
   }
 
   async addBill(addBillDto: AddBillDto) {
-    const bill = await this.create(_.omit(addBillDto, 'products'));
+    console.log(addBillDto);
+    const bill = await this.create(omit(addBillDto, 'products'));
     for (const product of addBillDto.products) {
       await this.addProductToBill(
         bill.id,

@@ -28,10 +28,11 @@ export function Right(prop: IProp) {
         const d = new Date(),
             minutes = d.getMinutes().toString().length == 1 ? '0' + d.getMinutes() : d.getMinutes(),
             hours = d.getHours().toString().length == 1 ? '0' + d.getHours() : d.getHours(),
+            seconds = d.getSeconds().toString().length == 1 ? '0' + d.getSeconds() : d.getSeconds(),
             ampm = d.getHours() >= 12 ? 'pm' : 'am',
             months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ' ' + hours + ':' + minutes + ampm;
+        return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear() + ' ' + hours + ':' + minutes + ':' + seconds + ampm;
 
     }
 
@@ -40,7 +41,7 @@ export function Right(prop: IProp) {
     useEffect(() => {
         const interval = setInterval(() => {
             setDate(getCurrentDate());
-        }, 60000); // Update every 1 minute
+        }, 1000); // Update every 1 seconds
 
         return () => clearInterval(interval);
     }, []);
@@ -150,7 +151,6 @@ export function Right(prop: IProp) {
             }
         }
 
-        // console.log(customer);
         const ISODate = new Date(convertToISO(date.substring(4))).toISOString();
         const notes = noteRef.current?.value || "";
         const products = prop.data.productOnBill.map((product, index) => {
