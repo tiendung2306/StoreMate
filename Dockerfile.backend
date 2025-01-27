@@ -1,17 +1,25 @@
 FROM node:18-alpine
 
-WORKDIR /app
+# Cài đặt phụ thuộc hệ thống
+RUN apk add --no-cache openssl curl
 
-COPY backend/prisma ./prisma/
+WORKDIR /app/backend
+
+# Copy package và cài đặt dependencies
 COPY backend/package*.json ./
+RUN npm ci
 
-RUN npm install
+# Copy toàn bộ source code
+COPY backend .
 
+# Cài đặt Prisma CLI và generate client
+RUN npm install -g prisma
 RUN npx prisma generate
 
-COPY backend .
+# Quyền thực thi cho scripts
+RUN chmod +x /app/backend/wait-for-it.sh
+RUN chmod +x /app/backend/entrypoint.sh
 
 EXPOSE 3000
 
-# Lệnh chạy ứng dụng
-CMD ["npm", "run", "start:dev"]
+ENTRYPOINT ["sh", "/app/backend/entrypoint.sh"]

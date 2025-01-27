@@ -4,9 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     container_name: frontend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     ports:
       - "8080:8080"
     depends_on:
@@ -22,18 +19,20 @@ services:
       dockerfile: Dockerfile.backend
     container_name: backend
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - /backend/public:/app/backend/public
     ports:
       - "3000:3000"
+      - "5555:5555"
     depends_on:
       - db
     environment:
       - PORT=3000
-      - FRONTEND_URL=http://frontend:8080
-      - DATABASE_URL=mysql://root:dung2306@localhost:3306/my_db
+      - DATABASE_URL=mysql://root:dung2306@mysql:3306/my_db
+      - DATABASE_USER=root
       - DATABASE_PASSWORD=dung2306
       - DATABASE_NAME=my_db
+    env_file:
+      - ./backend/.env
     networks:
       - app-network
 
@@ -45,8 +44,12 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: dung2306
       MYSQL_DATABASE: my_db
+    env_file:
+      - ./backend/.env
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - app-network
 
 networks:
   app-network:
