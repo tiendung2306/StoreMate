@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -12,8 +12,38 @@ enum UserRole {
 }
 
 @Injectable()
-export class UserService {
+export class UserService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
+
+  onModuleInit() {
+    console.log('The user service has been initialized.');
+    this.prisma.user
+      .findMany()
+      .then(async (users) => {
+        if (users.length === 0) {
+          await this.createUser({
+            name: process.env.DEFAULT_ADMIN_NAME || 'admin',
+            phone: process.env.DEFAULT_ADMIN_PHONE || '01234567891',
+            role: UserRole.ADMIN,
+            password: bcrypt.hashSync(process.env.DEFAULT_ADMIN_PASSWORD, 10),
+          });
+
+          await this.createUser({
+            name: process.env.DEFAULT_CUSTOMER_NAME || 'customer',
+            phone: process.env.DEFAULT_CUSTOMER_PHONE || '01234567892',
+            role: UserRole.CUSTOMER,
+            password: bcrypt.hashSync(
+              process.env.DEFAULT_CUSTOMER_PASSWORD,
+              10,
+            ),
+          });
+          console.log('Default admin and default customer have been created.');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
 
   getAllUsers() {
     return this.prisma.user.findMany();
